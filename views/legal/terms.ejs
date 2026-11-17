@@ -1,0 +1,62 @@
+<%- include('../partials/head', { title: 'Điều khoản sử dụng' }) %>
+<div class="wrap legal">
+  <div class="measure">
+    <h1>Điều khoản sử dụng</h1>
+    <% if (shop.legal.isSample) { %>
+      <div class="notice warn sample">Nội dung mẫu cho đồ án học phần. Cần đối chiếu với quy định pháp luật hiện hành và tài liệu của học phần trước khi dùng cho mục đích khác.</div>
+    <% } %>
+    <p>Khi truy cập <%= shop.name %>, tạo tài khoản hoặc đặt hàng, bạn đồng ý với các điều khoản dưới đây. Website do <%= shop.legal.companyName %> vận hành, xem <a href="/legal/seller">thông tin người bán</a>.</p>
+
+    <h2>1. Tài khoản</h2>
+    <ul>
+      <li>Bạn cung cấp thông tin chính xác khi đăng ký và tự bảo quản mật khẩu của mình. Chúng tôi chỉ lưu mật khẩu ở dạng đã băm, không lưu mật khẩu gốc.</li>
+      <li>Nhập sai mật khẩu <%= shop.login.maxFailedAttempts %> lần liên tiếp, tài khoản bị khóa tạm <%= shop.login.lockMinutes %> phút để bảo vệ bạn.</li>
+      <li>Để đăng ký, bạn tự tích ô đồng ý xử lý dữ liệu cá nhân và ô đồng ý điều khoản này. Hai ô đó không được đánh dấu sẵn.</li>
+    </ul>
+
+    <h2>2. Sản phẩm, giá và tồn kho</h2>
+    <ul>
+      <li>Giá niêm yết bằng đồng Việt Nam (VND). Mỗi size và màu có giá, mã SKU và số lượng tồn kho riêng.</li>
+      <li>Hệ thống kiểm tra tồn kho khi bạn thêm sản phẩm vào giỏ hàng và khi bạn đặt hàng.</li>
+      <li>Tồn kho được trừ khi cửa hàng xác nhận đơn. Nếu đến bước này sản phẩm đã hết, chúng tôi sẽ liên hệ để hủy đơn hoặc đổi sang sản phẩm khác.</li>
+    </ul>
+
+    <h2>3. Đặt hàng và trạng thái đơn</h2>
+    <p>Đơn hàng đi qua các trạng thái: Chờ xác nhận, Đã xác nhận, Đang giao, Đã giao, Đã hủy, Trả hàng/Hoàn tiền. Bạn xem trạng thái và lịch sử chuyển trạng thái trong mục "Đơn hàng của tôi". Khi đặt hàng, bạn tự tích ô đồng ý xử lý dữ liệu cá nhân để chúng tôi xử lý và giao đơn.</p>
+
+    <h2>4. Mã giảm giá</h2>
+    <ul>
+      <li>Mã chỉ áp dụng khi đơn đạt giá trị tối thiểu, còn trong thời hạn và còn lượt sử dụng.</li>
+      <li>Hủy đơn thì lượt sử dụng của mã được hoàn lại. Mã không đổi thành tiền mặt.</li>
+    </ul>
+
+    <h2>5. Thanh toán và giao hàng</h2>
+    <ul>
+      <li>Bạn chọn thanh toán khi nhận hàng (COD) hoặc thanh toán online.</li>
+      <li>Thanh toán online do cổng thanh toán xử lý. Chúng tôi chỉ ghi nhận kết quả sau khi kiểm tra chữ ký xác thực của cổng, và không lưu số thẻ của bạn.</li>
+      <li>Phí giao hàng <%= vnd(shop.shipping.fee) %>, miễn phí cho đơn từ <%= vnd(shop.shipping.freeFrom) %> sau khi trừ giảm giá.</li>
+    </ul>
+
+    <h2>6. Hủy đơn</h2>
+    <p>Bạn tự hủy đơn khi đơn còn ở trạng thái "Chờ xác nhận". Sau khi đơn đã xác nhận, vui lòng liên hệ cửa hàng. Nếu bạn đã thanh toán online, cửa hàng sẽ hoàn tiền và cập nhật trạng thái đơn.</p>
+
+    <h2>7. Đổi trả</h2>
+    <p>Việc đổi trả áp dụng theo <a href="/legal/returns">Chính sách đổi trả</a>.</p>
+
+    <h2>8. Đánh giá sản phẩm</h2>
+    <p>Chỉ khách hàng có đơn ở trạng thái "Đã giao" mới được đánh giá sản phẩm đã mua. Nội dung đánh giá cần trung thực, không chứa nội dung vi phạm pháp luật hoặc xúc phạm người khác. Chúng tôi có quyền ẩn đánh giá vi phạm.</p>
+
+    <h2>9. Sở hữu trí tuệ</h2>
+    <p>Hình ảnh, nội dung và thương hiệu trên website thuộc <%= shop.legal.companyName %> hoặc bên cấp phép. Bạn không sao chép, phân phối lại khi chưa được đồng ý bằng văn bản.</p>
+
+    <h2>10. Giới hạn trách nhiệm</h2>
+    <p>Chúng tôi nỗ lực giữ website hoạt động ổn định nhưng không bảo đảm không bao giờ gián đoạn. Trách nhiệm của chúng tôi đối với mỗi đơn hàng không vượt quá giá trị đơn hàng đó, trừ trường hợp pháp luật quy định khác.</p>
+
+    <h2>11. Giải quyết tranh chấp</h2>
+    <p>Hai bên ưu tiên thương lượng. Nếu không thương lượng được, tranh chấp được giải quyết tại tòa án có thẩm quyền theo pháp luật Việt Nam.</p>
+
+    <h2>12. Thay đổi điều khoản</h2>
+    <p>Chúng tôi có thể cập nhật điều khoản và đăng bản mới tại trang này. Bản có hiệu lực là bản đang hiển thị khi bạn đặt hàng.</p>
+  </div>
+</div>
+<%- include('../partials/foot') %>

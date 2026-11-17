@@ -1,0 +1,102 @@
+<%- include('../partials/head') %>
+<%
+  var shipFee = cart.subtotal >= shop.shipping.freeFrom ? 0 : shop.shipping.fee;
+  var total = cart.subtotal + shipFee;
+  var noAddress = addresses.length === 0;
+%>
+<div class="wrap">
+  <div class="page-title"><h1>Đặt hàng</h1></div>
+
+  <% if (blocked) { %>
+    <div class="notice warn" role="alert">Giỏ hàng có sản phẩm không đủ hàng. <a href="/cart">Quay lại giỏ hàng</a> để cập nhật.</div>
+  <% } %>
+
+  <form class="checkout-grid" action="/checkout" method="post">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+
+    <div>
+      <section class="step" aria-labelledby="st-address">
+        <h2 id="st-address">Địa chỉ giao hàng</h2>
+        <% if (noAddress) { %>
+          <div class="notice warn">Bạn chưa có địa chỉ giao hàng. <a href="/account/addresses/new?next=%2Fcheckout">Thêm địa chỉ</a> để tiếp tục đặt hàng.</div>
+        <% } else { %>
+          <div class="options">
+            <% addresses.forEach(function (a, i) { %>
+              <label class="option">
+                <input type="radio" name="addressId" value="<%= a.addressId %>"<%= (a.isDefault || (i === 0 && !addresses.some(function (x) { return x.isDefault; }))) ? ' checked' : '' %> required>
+                <span>
+                  <strong><%= a.recipientName %>, <%= a.phone %></strong>
+                  <p><%= a.street %>, <%= a.ward %><%= a.district ? ', ' + a.district : '' %>, <%= a.province %><%= a.isDefault ? ' (mặc định)' : '' %></p>
+                </span>
+              </label>
+            <% }) %>
+          </div>
+          <p class="small"><a href="/account/addresses/new?next=%2Fcheckout">Thêm địa chỉ khác</a></p>
+        <% } %>
+      </section>
+
+      <section class="step" aria-labelledby="st-pay">
+        <h2 id="st-pay">Phương thức thanh toán</h2>
+        <div class="options">
+          <label class="option">
+            <input type="radio" name="paymentMethod" value="COD" checked>
+            <span><strong>Thanh toán khi nhận hàng (COD)</strong><p>Trả tiền mặt cho nhân viên giao hàng.</p></span>
+          </label>
+          <label class="option<%= gateway.ready ? '' : ' is-disabled' %>">
+            <input type="radio" name="paymentMethod" value="ONLINE"<%= gateway.ready ? '' : ' disabled' %>>
+            <span>
+              <strong>Thanh toán online</strong>
+              <p><%= gateway.ready ? 'Cổng thanh toán: ' + gateway.label + '. Bạn sẽ được chuyển sang trang thanh toán sau khi đặt hàng.' : 'Cổng thanh toán online chưa được cấu hình trên website này.' %></p>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="step" aria-labelledby="st-discount">
+        <h2 id="st-discount">Mã giảm giá</h2>
+        <div class="discount-row">
+          <label class="sr-only" for="discountCode">Mã giảm giá</label>
+          <input id="discountCode" type="text" name="discountCode" maxlength="30" autocomplete="off" placeholder="Nhập mã giảm giá">
+          <button class="btn btn-outline" id="discount-apply" type="button">Áp dụng</button>
+        </div>
+        <p id="discount-msg" class="field-msg" role="status"></p>
+      </section>
+
+      <section class="step" aria-labelledby="st-note">
+        <h2 id="st-note">Ghi chú</h2>
+        <div class="field">
+          <label class="sr-only" for="note">Ghi chú cho đơn hàng</label>
+          <textarea id="note" name="note" maxlength="500" placeholder="Ví dụ: gọi trước khi giao"></textarea>
+        </div>
+      </section>
+    </div>
+
+    <aside class="summary" aria-labelledby="co-sum">
+      <h2 id="co-sum">Đơn hàng của bạn</h2>
+      <ul class="mini-lines">
+        <% cart.items.forEach(function (it) { %>
+          <li>
+            <img src="<%= it.image || '/images/placeholder.svg' %>" alt="" width="48" height="64" loading="lazy">
+            <span><%= it.name %><br><span class="muted small"><%= it.color %>, size <%= it.size %>, SL <%= it.quantity %></span></span>
+            <span><%= vnd(it.lineTotal) %></span>
+          </li>
+        <% }) %>
+      </ul>
+      <dl class="sum">
+        <dt>Tạm tính</dt><dd><%= vnd(cart.subtotal) %></dd>
+        <div class="contents" id="sum-discount-row" hidden><dt>Giảm giá</dt><dd id="sum-discount">-</dd></div>
+        <dt>Phí giao hàng</dt><dd id="sum-shipping" data-default="<%= shipFee === 0 ? 'Miễn phí' : vnd(shipFee) %>"><%= shipFee === 0 ? 'Miễn phí' : vnd(shipFee) %></dd>
+        <dt class="total">Tổng cộng</dt><dd class="total" id="sum-total" data-default="<%= vnd(total) %>"><%= vnd(total) %></dd>
+      </dl>
+
+      <%# Ô đồng ý xử lý dữ liệu cá nhân: KHÔNG đánh dấu sẵn (không có thuộc tính checked). Khách phải tự tích mới đặt được. %>
+      <div class="check field">
+        <input type="checkbox" id="consentData" name="consentData" required>
+        <label for="consentData">Tôi đồng ý để <%= shop.name %> xử lý dữ liệu cá nhân của tôi nhằm xử lý và giao đơn hàng theo <a href="/legal/privacy" target="_blank" rel="noopener">Chính sách bảo vệ dữ liệu cá nhân</a> và <a href="/legal/terms" target="_blank" rel="noopener">Điều khoản sử dụng</a>.</label>
+      </div>
+      <button class="btn btn-block" type="submit"<%= (blocked || noAddress) ? ' disabled' : '' %>>Đặt hàng</button>
+      <p class="muted small">Tồn kho và mã giảm giá được kiểm tra lại khi bạn bấm đặt hàng.</p>
+    </aside>
+  </form>
+</div>
+<%- include('../partials/foot') %>

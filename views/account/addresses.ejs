@@ -1,0 +1,42 @@
+<%- include('../partials/head', { title: 'Sổ địa chỉ' }) %>
+<div class="wrap account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <div class="row spread">
+      <h1>Sổ địa chỉ giao hàng</h1>
+      <a class="btn" href="/account/addresses/new">Thêm địa chỉ</a>
+    </div>
+    <% if (query.updated === '1') { %><div class="notice ok" role="status">Đã cập nhật sổ địa chỉ.</div><% } %>
+    <% if (query.error === 'default') { %><div class="notice error" role="alert">Không xóa được địa chỉ mặc định. Hãy chọn một địa chỉ khác làm mặc định trước.</div><% } %>
+
+    <% if (!addresses.length) { %>
+      <div class="empty">
+        <h2>Chưa có địa chỉ nào</h2>
+        <p>Thêm địa chỉ để đặt hàng nhanh hơn.</p>
+      </div>
+    <% } else { %>
+      <% addresses.forEach(function (a) { %>
+        <div class="addr">
+          <div>
+            <p><strong><%= a.recipientName %></strong>, <%= a.phone %> <% if (a.isDefault) { %><span class="badge">Mặc định</span><% } %></p>
+            <p><%= a.street %>, <%= a.ward %><%= a.district ? ', ' + a.district : '' %>, <%= a.province %></p>
+          </div>
+          <div class="addr-actions">
+            <a class="btn btn-outline btn-sm" href="/account/addresses/<%= a.addressId %>/edit">Sửa</a>
+            <% if (!a.isDefault) { %>
+              <form action="/account/addresses/<%= a.addressId %>/set-default" method="post">
+                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+                <button class="btn btn-outline btn-sm" type="submit">Đặt làm mặc định</button>
+              </form>
+              <form action="/account/addresses/<%= a.addressId %>/delete" method="post">
+                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+                <button class="btn btn-danger btn-sm" type="submit" data-confirm="Xóa địa chỉ này?">Xóa</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

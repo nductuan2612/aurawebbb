@@ -1,0 +1,21 @@
+<%- include('../partials/head', { title: 'Đăng nhập' }) %>
+<% var errs = locals.errors || {}; %>
+<div class="wrap auth narrow">
+  <h1>Đăng nhập</h1>
+  <% if (errs.general) { %><div class="notice error" role="alert"><%= errs.general %></div><% } %>
+  <form action="/login" method="post">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+    <input type="hidden" name="next" value="<%= locals.next || '' %>">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" name="email" value="<%= locals.email || '' %>" autocomplete="email" maxlength="254" required>
+    </div>
+    <div class="field">
+      <label for="password">Mật khẩu</label>
+      <input id="password" type="password" name="password" autocomplete="current-password" maxlength="200" required>
+    </div>
+    <button class="btn btn-block" type="submit">Đăng nhập</button>
+  </form>
+  <p class="auth-alt">Chưa có tài khoản? <a href="/register">Đăng ký</a></p>
+</div>
+<%- include('../partials/foot') %>

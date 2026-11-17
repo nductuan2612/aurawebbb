@@ -1,0 +1,13 @@
+<% if (pagination.totalPages > 1) { %>
+  <% var pgParam = locals.param || 'page'; var pgAnchor = locals.anchor || ''; var pgQs = locals.qs || ''; %>
+  <% var pgHref = function (n) { return basePath + '?' + (pgQs ? pgQs + '&' : '') + pgParam + '=' + n + pgAnchor; }; %>
+  <nav class="pager" aria-label="Phân trang">
+    <% if (pagination.hasPrev) { %><a href="<%= pgHref(pagination.current - 1) %>" rel="prev">Trước</a><% } %>
+    <% pagination.items.forEach(function (n) { %>
+      <% if (n === null) { %><span class="gap">…</span>
+      <% } else if (n === pagination.current) { %><span aria-current="page"><%= n %></span>
+      <% } else { %><a href="<%= pgHref(n) %>"><%= n %></a><% } %>
+    <% }) %>
+    <% if (pagination.hasNext) { %><a href="<%= pgHref(pagination.current + 1) %>" rel="next">Sau</a><% } %>
+  </nav>
+<% } %>

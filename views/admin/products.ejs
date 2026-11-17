@@ -1,0 +1,75 @@
+<%- include('../partials/admin-head') %>
+<div class="row spread">
+  <h1>Sản phẩm</h1>
+  <a class="btn" href="/admin/products/new">Thêm sản phẩm</a>
+</div>
+
+<form class="toolbar" method="get" action="/admin/products">
+  <div class="field grow">
+    <label for="p-q">Tìm kiếm</label>
+    <input id="p-q" type="search" name="q" value="<%= filters.q %>" placeholder="Tên hoặc mã sản phẩm" maxlength="100">
+  </div>
+  <div class="field">
+    <label for="p-cat">Danh mục</label>
+    <select id="p-cat" name="category">
+      <option value="">Tất cả</option>
+      <% categories.forEach(function (c) { %>
+        <option value="<%= c.id %>"<%= String(filters.category) === String(c.id) ? ' selected' : '' %>><%= c.parentName ? c.parentName + ' / ' + c.name : c.name %></option>
+      <% }) %>
+    </select>
+  </div>
+  <div class="field">
+    <label for="p-act">Trạng thái</label>
+    <select id="p-act" name="active">
+      <option value="">Tất cả</option>
+      <option value="1"<%= filters.active === '1' ? ' selected' : '' %>>Đang bán</option>
+      <option value="0"<%= filters.active === '0' ? ' selected' : '' %>>Đã ẩn</option>
+    </select>
+  </div>
+  <button class="btn btn-sm" type="submit">Lọc</button>
+  <a class="btn btn-outline btn-sm" href="/admin/products">Xóa bộ lọc</a>
+</form>
+
+<% if (!items.length) { %>
+  <p class="empty">Không có sản phẩm nào phù hợp.</p>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th scope="col">Sản phẩm</th><th scope="col">Danh mục</th><th scope="col" class="num">Biến thể</th>
+          <th scope="col" class="num">Tồn kho</th><th scope="col" class="num">Giá từ</th><th scope="col">Trạng thái</th>
+          <th scope="col"><span class="sr-only">Thao tác</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function (p) { %>
+          <tr>
+            <td>
+              <div class="cell-product">
+                <img class="thumb-sm" src="<%= p.image || '/images/placeholder.svg' %>" alt="" width="40" height="53" loading="lazy">
+                <span><strong><%= p.name %></strong><br><span class="muted small"><%= p.code %><%= p.isFeatured ? ', nổi bật' : '' %></span></span>
+              </div>
+            </td>
+            <td><%= p.categoryName %></td>
+            <td class="num"><%= p.variantCount %></td>
+            <td class="num"><span class="<%= p.totalStock <= 0 ? 'tag-out' : (p.totalStock <= shop.lowStockThreshold ? 'tag-low' : '') %>"><%= p.totalStock %></span></td>
+            <td class="num"><%= p.minPrice === null || p.minPrice === undefined ? '-' : vnd(p.minPrice) %></td>
+            <td><span class="badge <%= p.isActive ? 'is-on' : 'is-off' %>"><%= p.isActive ? 'Đang bán' : 'Đã ẩn' %></span></td>
+            <td class="actions">
+              <a class="btn btn-outline btn-sm" href="/admin/products/<%= p.id %>/edit">Sửa</a>
+              <a class="btn btn-outline btn-sm" href="/admin/products/<%= p.id %>/variants">Biến thể</a>
+              <form action="/admin/products/<%= p.id %>/toggle" method="post">
+                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+                <input type="hidden" name="active" value="<%= p.isActive ? '0' : '1' %>">
+                <button class="btn btn-outline btn-sm" type="submit"><%= p.isActive ? 'Ẩn' : 'Bán lại' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/pagination', { pagination: pagination, basePath: '/admin/products', qs: baseQuery }) %>
+<% } %>
+<%- include('../partials/admin-foot') %>

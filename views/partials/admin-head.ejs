@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title><%= title %> | Quản trị <%= shop.name %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="admin">
+<a class="skip-link" href="#main">Bỏ qua điều hướng</a>
+<div class="admin-shell">
+  <aside class="admin-side">
+    <a class="admin-brand" href="/admin">AURA<span>Khu vực quản trị</span></a>
+    <nav aria-label="Quản trị">
+      <ul>
+        <% [['/admin', 'Tổng quan'], ['/admin/orders', 'Đơn hàng'], ['/admin/products', 'Sản phẩm'], ['/admin/categories', 'Danh mục'], ['/admin/discounts', 'Mã giảm giá'], ['/admin/reports', 'Báo cáo']].forEach(function (it) {
+             var here = it[0] === '/admin' ? (currentPath === '/admin' || currentPath === '/admin/') : currentPath.indexOf(it[0]) === 0; %>
+          <li><a href="<%= it[0] %>"<% if (here) { %> aria-current="page"<% } %>><%= it[1] %></a></li>
+        <% }) %>
+      </ul>
+    </nav>
+    <div class="admin-user">
+      <p class="small"><%= user.fullName %><br><span class="muted"><%= user.email %></span></p>
+      <a href="/">Xem cửa hàng</a>
+      <form action="/logout" method="post">
+        <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+        <button class="btn btn-outline btn-sm" type="submit">Đăng xuất</button>
+      </form>
+    </div>
+  </aside>
+  <main id="main" class="admin-main">

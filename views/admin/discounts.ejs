@@ -1,0 +1,49 @@
+<%- include('../partials/admin-head') %>
+<div class="row spread">
+  <h1>Mã giảm giá</h1>
+  <a class="btn" href="/admin/discounts/new">Thêm mã giảm giá</a>
+</div>
+<p class="muted">Mã chỉ áp dụng khi đơn đạt giá trị tối thiểu, còn trong thời hạn và còn lượt dùng. Hủy đơn thì lượt dùng được trả lại.</p>
+
+<% if (!discounts.length) { %>
+  <p class="empty">Chưa có mã giảm giá nào.</p>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th scope="col">Mã</th><th scope="col">Ưu đãi</th><th scope="col" class="num">Đơn tối thiểu</th>
+          <th scope="col">Thời hạn</th><th scope="col" class="num">Lượt dùng</th><th scope="col">Trạng thái</th>
+          <th scope="col"><span class="sr-only">Thao tác</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% discounts.forEach(function (d) { %>
+          <tr>
+            <td><strong><%= d.Code %></strong><% if (d.Description) { %><br><span class="muted small"><%= d.Description %></span><% } %></td>
+            <td>
+              <% if (d.DiscountType === 'PERCENT') { %>
+                Giảm <%= d.DiscountValue %>%<%= d.MaxDiscountAmount ? ', tối đa ' + vnd(d.MaxDiscountAmount) : '' %>
+              <% } else { %>
+                Giảm <%= vnd(d.DiscountValue) %>
+              <% } %>
+            </td>
+            <td class="num"><%= vnd(d.MinOrderValue) %></td>
+            <td><%= fmtDateTime(d.StartsAt) %><br><span class="muted small">đến <%= fmtDateTime(d.EndsAt) %></span></td>
+            <td class="num"><%= d.UsedCount %> / <%= d.UsageLimit ? d.UsageLimit : 'không giới hạn' %></td>
+            <td><span class="badge state-<%= d.state.code.toLowerCase() %>"><%= d.state.label %></span></td>
+            <td class="actions">
+              <a class="btn btn-outline btn-sm" href="/admin/discounts/<%= d.DiscountId %>/edit">Sửa</a>
+              <form action="/admin/discounts/<%= d.DiscountId %>/toggle" method="post">
+                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+                <input type="hidden" name="active" value="<%= d.IsActive ? '0' : '1' %>">
+                <button class="btn btn-outline btn-sm" type="submit"><%= d.IsActive ? 'Tạm dừng' : 'Bật lại' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/admin-foot') %>

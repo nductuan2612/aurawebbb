@@ -1,0 +1,34 @@
+<%- include('../partials/head') %>
+<div class="wrap">
+  <div class="page-title"><h1>Thanh toán online</h1><p class="muted">Đơn hàng <strong><%= order.code %></strong></p></div>
+  <div class="checkout-grid">
+    <section class="panel qr-payment">
+      <h2>Quét mã QR để thanh toán</h2>
+      <p class="muted">Mở ứng dụng ngân hàng, quét mã và giữ nguyên nội dung chuyển khoản.</p>
+      <div class="qr-frame"><img src="<%= payment.checkoutUrl %>" alt="Mã QR thanh toán đơn <%= order.code %>"></div>
+      <p class="qr-amount"><%= vnd(payment.amount) %></p>
+      <p class="payment-reference">Nội dung chuyển khoản: <strong><%= sepay.content %></strong></p>
+      <div class="payment-bank-info">
+        <p><span>Ngân hàng</span><strong><%= sepay.bankName %></strong></p>
+        <p><span>Số tài khoản</span><strong><%= sepay.accountNumber %></strong></p>
+        <p><span>Chủ tài khoản</span><strong><%= sepay.accountName %></strong></p>
+      </div>
+      <div id="sepay-status" class="notice info" data-sepay-poll data-status-url="/payment/sepay/<%= encodeURIComponent(order.code) %>/status?ref=<%= encodeURIComponent(payment.paymentRef) %>" data-orders-url="/orders">Đang chờ hệ thống xác nhận giao dịch...</div>
+      <div class="notice info">Hệ thống sẽ đối soát giao dịch theo nội dung trên. Bạn có thể đóng trang này và xem lại trong đơn hàng.</div>
+      <a class="btn btn-block" href="/orders/<%= order.code %>">Quay lại chi tiết đơn hàng</a>
+    </section>
+    <aside class="summary"><h2>Thông tin đơn hàng</h2><dl class="sum"><dt>Mã đơn</dt><dd><%= order.code %></dd><dt>Trạng thái</dt><dd>Chờ thanh toán</dd><dt class="total">Tổng cộng</dt><dd class="total"><%= vnd(order.total) %></dd></dl></aside>
+  </div>
+</div>
+<div id="sepay-success-modal" class="payment-modal" data-sepay-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="sepay-success-title" aria-describedby="sepay-success-message">
+  <div class="payment-modal__backdrop" data-sepay-modal-close></div>
+  <section class="payment-modal__card" role="document">
+    <div class="payment-modal__icon" aria-hidden="true">✓</div>
+    <h2 id="sepay-success-title">Thanh toán thành công</h2>
+    <p id="sepay-success-message">Hệ thống đã nhận được thanh toán cho đơn hàng <strong><%= order.code %></strong>.</p>
+    <p class="muted small">Bạn sẽ được chuyển về danh sách đơn hàng sau giây lát.</p>
+    <button type="button" class="btn btn-block" data-sepay-go-orders>Xem đơn hàng</button>
+  </section>
+</div>
+<script src="/js/sepay-payment.js?v=3" defer></script>
+<%- include('../partials/foot') %>

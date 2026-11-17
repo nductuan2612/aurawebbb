@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title === shop.name ? shop.name + ' - ' + shop.tagline : title + ' | ' + shop.name %></title>
+  <% if (locals.metaDescription) { %><meta name="description" content="<%= locals.metaDescription %>"><% } %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&amp;display=swap">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/shop.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Bỏ qua phần đầu trang</a>
+<div class="announce">Miễn phí giao hàng cho đơn từ <%= vnd(shop.shipping.freeFrom) %>. Đổi trả trong <%= shop.policies.returnDays %> ngày.</div>
+<header class="site-header">
+  <div class="wrap header-row">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav">Menu</button>
+    <nav id="primary-nav" class="primary-nav" aria-label="Danh mục sản phẩm">
+      <ul>
+        <% navCategories.forEach(function (root) { %>
+          <li class="has-sub">
+            <a href="/category/<%= root.slug %>"><%= root.name %></a>
+            <% if (root.children.length) { %>
+              <ul class="sub">
+                <% root.children.forEach(function (c) { %>
+                  <li><a href="/category/<%= c.slug %>"><%= c.name %></a></li>
+                <% }) %>
+              </ul>
+            <% } %>
+          </li>
+        <% }) %>
+        <li><a href="/products?sale=1">Giảm giá</a></li>
+        <li class="search-mobile">
+          <form action="/products" method="get" role="search">
+            <label class="sr-only" for="q-mobile">Tìm sản phẩm</label>
+            <input id="q-mobile" type="search" name="q" placeholder="Tìm sản phẩm" maxlength="100">
+          </form>
+        </li>
+      </ul>
+    </nav>
+    <a class="brand" href="/" aria-label="<%= shop.name %>, về trang chủ">AURA<span>moda</span></a>
+    <div class="header-actions">
+      <form class="search" action="/products" method="get" role="search">
+        <label class="sr-only" for="q-desktop">Tìm sản phẩm</label>
+        <input id="q-desktop" type="search" name="q" placeholder="Tìm sản phẩm" maxlength="100" value="<%= typeof query.q === 'string' && currentPath === '/products' ? query.q : '' %>">
+      </form>
+      <% if (user) { %>
+        <% if (user.role === 'ADMIN') { %><a href="/admin">Quản trị</a><% } %>
+        <a href="/account"><%= user.fullName %></a>
+        <form class="inline-form" action="/logout" method="post">
+          <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+          <button type="submit">Đăng xuất</button>
+        </form>
+      <% } else { %>
+        <a href="/login">Đăng nhập</a>
+      <% } %>
+      <a class="cart-link" href="/cart">Giỏ hàng<% if (cartCount > 0) { %><span class="count" aria-label="<%= cartCount %> sản phẩm"><%= cartCount %></span><% } %></a>
+    </div>
+  </div>
+</header>
+<main id="main">

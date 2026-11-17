@@ -1,0 +1,32 @@
+<%- include('../partials/head', { title: 'Đơn hàng của tôi' }) %>
+<div class="wrap account">
+  <%- include('../partials/account-nav') %>
+  <div>
+    <h1>Đơn hàng của tôi</h1>
+    <% if (!items.length) { %>
+      <div class="empty">
+        <h2>Bạn chưa có đơn hàng</h2>
+        <p>Các đơn hàng bạn đặt sẽ hiện ở đây.</p>
+        <p><a class="btn" href="/products">Xem sản phẩm</a></p>
+      </div>
+    <% } else { %>
+      <% items.forEach(function (o) { %>
+        <a class="order-card" href="/orders/<%= o.code %>">
+          <img src="<%= o.firstImage || '/images/placeholder.svg' %>" alt="" width="72" height="96" loading="lazy">
+          <div>
+            <p class="order-code"><%= o.code %></p>
+            <p><%= o.firstName %></p>
+            <p class="muted small"><%= o.itemCount %> sản phẩm, đặt lúc <%= fmtDateTime(o.placedAt) %></p>
+          </div>
+          <div class="end">
+            <strong><%= vnd(o.total) %></strong>
+            <span class="badge <%= S.badgeClass(o.status) %>"><%= S.label(o.status) %></span>
+            <span class="badge <%= S.paymentBadgeClass(o.paymentState) %>"><%= S.paymentLabel(o.paymentMethod, o.paymentState) %></span>
+          </div>
+        </a>
+      <% }) %>
+      <%- include('../partials/pagination', { pagination: pagination, basePath: '/orders', qs: '' }) %>
+    <% } %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

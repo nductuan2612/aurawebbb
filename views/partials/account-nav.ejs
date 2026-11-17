@@ -1,0 +1,7 @@
+<nav class="account-nav" aria-label="Tài khoản">
+  <ul>
+    <% [['/account', 'Hồ sơ'], ['/account/addresses', 'Sổ địa chỉ'], ['/orders', 'Đơn hàng'], ['/account/password', 'Đổi mật khẩu']].forEach(function (it) { %>
+      <li><a href="<%= it[0] %>"<% if (currentPath === it[0] || (it[0] !== '/account' && currentPath.indexOf(it[0]) === 0)) { %> aria-current="page"<% } %>><%= it[1] %></a></li>
+    <% }) %>
+  </ul>
+</nav>

@@ -1,0 +1,58 @@
+<%- include('../partials/head', { title: 'Cổng thanh toán demo' }) %>
+<%
+  var explain = {
+    PAID: 'Chữ ký hợp lệ và số tiền khớp. Thanh toán được ghi nhận.',
+    DUPLICATE: 'Thông báo gửi lặp. Hệ thống nhận ra khoản này đã được ghi nhận nên bỏ qua, không cộng tiền lần hai.',
+    DUPLICATE_OTHER_TXN: 'Khoản này đã được ghi nhận với mã giao dịch khác. Giữ nguyên mã cũ, không ghi đè.',
+    INVALID_SIGNATURE: 'Chữ ký không hợp lệ. Thông báo bị từ chối và không làm thay đổi dữ liệu.',
+    AMOUNT_MISMATCH: 'Chữ ký hợp lệ nhưng số tiền không khớp với đơn hàng. Thông báo bị từ chối.',
+    FAILED: 'Cổng báo thanh toán thất bại. Khoản thanh toán chuyển sang trạng thái thất bại, bạn có thể thử lại.',
+    IGNORED: 'Thông báo không làm thay đổi trạng thái hiện tại nên bị bỏ qua.',
+    DOUBLE_PAYMENT: 'Đơn đã có một lần thanh toán khác thành công. Lần này bị chặn.',
+    PAID_ORDER_CLOSED: 'Đã nhận tiền nhưng đơn đã đóng. Cần hoàn tiền cho khách.',
+    PAYMENT_NOT_FOUND: 'Không tìm thấy khoản thanh toán tương ứng.'
+  };
+  var labels = { success: 'Thành công', fail: 'Thất bại', tamper: 'Sửa số tiền sau khi ký', wrongamount: 'Sai số tiền', replay: 'Gửi hai lần' };
+%>
+<div class="wrap section">
+  <div class="mock-box">
+    <h1>Cổng thanh toán demo</h1>
+    <div class="notice warn">Đây là cổng giả lập chỉ dùng để kiểm thử. Không có tiền thật được chuyển. Khi cấu hình cổng thật trong file .env, trang này sẽ không còn dùng nữa.</div>
+    <dl class="sum">
+      <dt>Đơn hàng</dt><dd><%= pay.orderCode %></dd>
+      <dt>Mã tham chiếu</dt><dd><%= pay.paymentRef %></dd>
+      <dt>Số tiền</dt><dd><%= vnd(pay.amount) %></dd>
+      <dt>Trạng thái khoản thanh toán</dt><dd><span class="badge <%= S.paymentBadgeClass(pay.status) %>"><%= S.PAYMENT_LABELS[pay.status] || pay.status %></span></dd>
+    </dl>
+
+    <form action="/payment/mock/<%= pay.paymentRef %>/simulate" method="post">
+      <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+      <p class="small">Chọn kịch bản. Máy chủ dựng thông báo đã ký rồi xử lý đúng như khi cổng thật gọi về.</p>
+      <div class="mock-actions">
+        <button class="btn" type="submit" name="action" value="success">Thanh toán thành công</button>
+        <button class="btn btn-outline" type="submit" name="action" value="fail">Thanh toán thất bại</button>
+        <button class="btn btn-outline" type="submit" name="action" value="replay">Gửi thông báo hai lần</button>
+        <button class="btn btn-outline" type="submit" name="action" value="tamper">Sửa số tiền sau khi ký</button>
+        <button class="btn btn-outline" type="submit" name="action" value="wrongamount">Sai số tiền</button>
+      </div>
+    </form>
+
+    <% if (results) { %>
+      <h2>Kết quả xử lý</h2>
+      <table class="result-table">
+        <thead><tr><th>Kịch bản</th><th>HTTP</th><th>Kết quả</th></tr></thead>
+        <tbody>
+          <% results.forEach(function (r) { %>
+            <tr>
+              <td><%= labels[r.action] || r.action %></td>
+              <td><%= r.httpStatus %></td>
+              <td><strong><%= r.outcome %></strong><br><span class="muted small"><%= explain[r.outcome] || '' %></span></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+    <p><a href="/orders/<%= pay.orderCode %>">Về trang đơn hàng</a></p>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,64 @@
+<%
+  var c = category || {};
+  var errs = locals.errors || {};
+  var editing = Boolean(c.id);
+  var act = c.isActive === true || c.isActive === 1 || c.isActive === 'on';
+%>
+<%- include('../partials/admin-head') %>
+<p class="small"><a href="/admin/categories">Danh sách danh mục</a></p>
+<h1><%= editing ? 'Sửa danh mục' : 'Thêm danh mục' %></h1>
+
+<div class="panel form-panel">
+  <% if (errs.general) { %><div class="notice error" role="alert"><%= errs.general %></div><% } %>
+  <form action="<%= editing ? '/admin/categories/' + c.id + '/edit' : '/admin/categories/new' %>" method="post">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+
+    <div class="field<%= errs.name ? ' has-error' : '' %>">
+      <label for="c-name">Tên danh mục</label>
+      <input id="c-name" type="text" name="name" value="<%= c.name || '' %>" maxlength="100" data-slug-from="c-slug" required>
+      <% if (errs.name) { %><p class="field-error" role="alert"><%= errs.name %></p><% } %>
+    </div>
+
+    <div class="field<%= errs.slug ? ' has-error' : '' %>">
+      <label for="c-slug">Đường dẫn (slug)</label>
+      <input id="c-slug" type="text" name="slug" value="<%= c.slug || '' %>" maxlength="120" placeholder="Tự tạo từ tên nếu để trống">
+      <span class="hint">Chữ thường không dấu, số và dấu gạch ngang. Ví dụ: ao-khoac-nu.</span>
+      <% if (errs.slug) { %><p class="field-error" role="alert"><%= errs.slug %></p><% } %>
+    </div>
+
+    <div class="grid-2">
+      <div class="field<%= errs.parentId ? ' has-error' : '' %>">
+        <label for="c-parent">Danh mục cha</label>
+        <select id="c-parent" name="parentId">
+          <option value="">Không có (danh mục gốc)</option>
+          <% parents.forEach(function (p) { %>
+            <option value="<%= p.id %>"<%= String(c.parentId || '') === String(p.id) ? ' selected' : '' %>><%= p.name %></option>
+          <% }) %>
+        </select>
+        <% if (errs.parentId) { %><p class="field-error" role="alert"><%= errs.parentId %></p><% } %>
+      </div>
+      <div class="field<%= errs.sortOrder ? ' has-error' : '' %>">
+        <label for="c-sort">Thứ tự hiển thị</label>
+        <input id="c-sort" type="text" inputmode="numeric" name="sortOrder" value="<%= c.sortOrder === undefined || c.sortOrder === null ? 0 : c.sortOrder %>" maxlength="4">
+        <% if (errs.sortOrder) { %><p class="field-error" role="alert"><%= errs.sortOrder %></p><% } %>
+      </div>
+    </div>
+
+    <div class="field<%= errs.description ? ' has-error' : '' %>">
+      <label for="c-desc">Mô tả</label>
+      <input id="c-desc" type="text" name="description" value="<%= c.description || '' %>" maxlength="500">
+      <% if (errs.description) { %><p class="field-error" role="alert"><%= errs.description %></p><% } %>
+    </div>
+
+    <div class="check field">
+      <input type="checkbox" id="c-active" name="isActive"<%= act ? ' checked' : '' %>>
+      <label for="c-active">Hiện trên cửa hàng</label>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn" type="submit">Lưu danh mục</button>
+      <a class="btn btn-outline" href="/admin/categories">Hủy</a>
+    </div>
+  </form>
+</div>
+<%- include('../partials/admin-foot') %>

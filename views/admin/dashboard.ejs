@@ -1,0 +1,75 @@
+<%- include('../partials/admin-head') %>
+<h1>Tổng quan</h1>
+
+<% if (refundCount > 0) { %>
+  <div class="notice warn" role="status"><%= refundCount %> đơn đã đóng nhưng khách đã thanh toán, cần hoàn tiền. <a href="/admin/orders?refund=1">Xem các đơn này</a>.</div>
+<% } %>
+
+<div class="kpis">
+  <div class="kpi">
+    <p class="kpi-label">Đơn đặt hôm nay</p>
+    <p class="kpi-value"><%= stats.todayOrders %></p>
+  </div>
+  <div class="kpi">
+    <p class="kpi-label">Chờ xác nhận</p>
+    <p class="kpi-value"><%= stats.pendingOrders %></p>
+    <p class="small"><a href="/admin/orders?status=PENDING">Xem danh sách</a></p>
+  </div>
+  <div class="kpi">
+    <p class="kpi-label">Doanh thu tháng này</p>
+    <p class="kpi-value"><%= vnd(stats.monthRevenue) %></p>
+    <p class="muted small"><%= stats.monthDelivered %> đơn đã giao</p>
+  </div>
+  <div class="kpi">
+    <p class="kpi-label">Biến thể còn từ <%= shop.lowStockThreshold %> sản phẩm trở xuống</p>
+    <p class="kpi-value"><%= stats.lowStock %></p>
+  </div>
+</div>
+
+<div class="two-col">
+  <section aria-labelledby="d-pending">
+    <h2 id="d-pending">Đơn chờ xác nhận</h2>
+    <% if (!pending.length) { %>
+      <p class="muted">Không có đơn nào đang chờ.</p>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th scope="col">Mã đơn</th><th scope="col">Khách hàng</th><th scope="col" class="num">Tổng</th><th scope="col">Thanh toán</th></tr></thead>
+          <tbody>
+            <% pending.forEach(function (o) { %>
+              <tr>
+                <td><a href="/admin/orders/<%= o.code %>"><%= o.code %></a><br><span class="muted small"><%= fmtDateTime(o.placedAt) %></span></td>
+                <td><%= o.customerName %></td>
+                <td class="num"><%= vnd(o.total) %></td>
+                <td><span class="badge <%= S.paymentBadgeClass(o.paymentState) %>"><%= S.paymentLabel(o.paymentMethod, o.paymentState) %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+  <section aria-labelledby="d-low">
+    <h2 id="d-low">Sắp hết hàng</h2>
+    <% if (!lowStock.length) { %>
+      <p class="muted">Không có biến thể nào sắp hết hàng.</p>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th scope="col">Sản phẩm</th><th scope="col">Biến thể</th><th scope="col" class="num">Còn</th></tr></thead>
+          <tbody>
+            <% lowStock.forEach(function (v) { %>
+              <tr>
+                <td><a href="/admin/products/<%= v.productId %>/variants"><%= v.productName %></a></td>
+                <td><%= v.color %>, <%= v.size %><br><span class="muted small"><%= v.sku %></span></td>
+                <td class="num"><span class="<%= v.stock <= 0 ? 'tag-out' : 'tag-low' %>"><%= v.stock %></span></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+</div>
+<%- include('../partials/admin-foot') %>

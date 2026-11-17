@@ -1,0 +1,37 @@
+<%- include('../partials/head', { title: 'Hồ sơ' }) %>
+<% var errs = locals.errors || {}; %>
+<div class="wrap account">
+  <%- include('../partials/account-nav') %>
+  <div class="measure">
+    <h1>Hồ sơ của tôi</h1>
+    <% if (query.updated === '1') { %><div class="notice ok" role="status">Đã lưu thông tin.</div><% } %>
+    <form action="/account" method="post">
+      <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" value="<%= profile.email %>" disabled>
+        <span class="hint">Email dùng để đăng nhập nên không đổi được ở đây.</span>
+      </div>
+      <div class="field<%= errs.fullName ? ' has-error' : '' %>">
+        <label for="fullName">Họ và tên</label>
+        <input id="fullName" type="text" name="fullName" value="<%= profile.fullName %>" maxlength="100" autocomplete="name" required>
+        <% if (errs.fullName) { %><p class="field-error" role="alert"><%= errs.fullName %></p><% } %>
+      </div>
+      <div class="grid-2">
+        <div class="field<%= errs.phone ? ' has-error' : '' %>">
+          <label for="phone">Số điện thoại</label>
+          <input id="phone" type="tel" name="phone" value="<%= profile.phone || '' %>" maxlength="20" autocomplete="tel">
+          <% if (errs.phone) { %><p class="field-error" role="alert"><%= errs.phone %></p><% } %>
+        </div>
+        <div class="field<%= errs.dateOfBirth ? ' has-error' : '' %>">
+          <label for="dateOfBirth">Ngày sinh</label>
+          <input id="dateOfBirth" type="date" name="dateOfBirth" value="<%= profile.dateOfBirth || '' %>" autocomplete="bday">
+          <% if (errs.dateOfBirth) { %><p class="field-error" role="alert"><%= errs.dateOfBirth %></p><% } %>
+        </div>
+      </div>
+      <button class="btn" type="submit">Lưu thay đổi</button>
+    </form>
+    <p class="muted small">Dữ liệu cá nhân của bạn được xử lý theo <a href="/legal/privacy">Chính sách bảo vệ dữ liệu cá nhân</a>.</p>
+  </div>
+</div>
+<%- include('../partials/foot') %>

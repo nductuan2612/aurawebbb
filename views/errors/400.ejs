@@ -1,0 +1,7 @@
+<%- include('../partials/head', { title: 'Không thực hiện được' }) %>
+<div class="wrap error-page">
+  <h1>Không thực hiện được</h1>
+  <div class="notice error" role="alert"><%= message %></div>
+  <p class="row"><a class="btn" href="<%= locals.back || '/' %>">Quay lại</a><a class="btn btn-outline" href="/">Về trang chủ</a></p>
+</div>
+<%- include('../partials/foot') %>

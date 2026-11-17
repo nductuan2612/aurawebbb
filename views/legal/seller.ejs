@@ -1,0 +1,39 @@
+<%- include('../partials/head', { title: 'Thông tin người bán' }) %>
+<div class="wrap legal">
+  <div class="measure">
+    <h1>Thông tin người bán</h1>
+    <% if (shop.legal.isSample) { %>
+      <div class="notice warn sample">Đây là thông tin mẫu cho đồ án học phần. Hãy thay bằng thông tin thật của đơn vị bán hàng trong file config/shop.js trước khi dùng cho mục đích khác.</div>
+    <% } %>
+    <p>Website <%= shop.name %> do đơn vị dưới đây sở hữu và vận hành.</p>
+    <table>
+      <tbody>
+        <tr><th scope="row">Tên đơn vị</th><td><%= shop.legal.companyName %></td></tr>
+        <tr><th scope="row">Tên website</th><td><%= shop.name %> (<%= appBaseUrl %>)</td></tr>
+        <tr><th scope="row">Địa chỉ trụ sở</th><td><%= shop.legal.address %></td></tr>
+        <tr><th scope="row">Điện thoại</th><td><%= shop.legal.phone %></td></tr>
+        <tr><th scope="row">Email hỗ trợ</th><td><a href="mailto:<%= shop.legal.email %>"><%= shop.legal.email %></a></td></tr>
+        <tr><th scope="row">Mã số thuế</th><td><%= shop.legal.taxCode %></td></tr>
+        <tr><th scope="row">Đăng ký kinh doanh</th><td><%= shop.legal.businessLicense %></td></tr>
+        <tr><th scope="row">Người đại diện</th><td><%= shop.legal.representative %></td></tr>
+        <tr><th scope="row">Giờ làm việc</th><td><%= shop.legal.workingHours %></td></tr>
+        <tr><th scope="row">Liên hệ về dữ liệu cá nhân</th><td><a href="mailto:<%= shop.legal.privacyContact %>"><%= shop.legal.privacyContact %></a></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Hình thức bán hàng</h2>
+    <ul>
+      <li>Thanh toán khi nhận hàng (COD) hoặc thanh toán online qua cổng thanh toán.</li>
+      <li>Phí giao hàng <%= vnd(shop.shipping.fee) %>, miễn phí cho đơn từ <%= vnd(shop.shipping.freeFrom) %> sau khi trừ giảm giá.</li>
+      <li>Đổi trả trong <%= shop.policies.returnDays %> ngày kể từ khi nhận hàng, xem <a href="/legal/returns">Chính sách đổi trả</a>.</li>
+    </ul>
+
+    <h2>Văn bản liên quan</h2>
+    <ul>
+      <li><a href="/legal/terms">Điều khoản sử dụng</a></li>
+      <li><a href="/legal/privacy">Chính sách bảo vệ dữ liệu cá nhân</a></li>
+      <li><a href="/legal/returns">Chính sách đổi trả</a></li>
+    </ul>
+  </div>
+</div>
+<%- include('../partials/foot') %>

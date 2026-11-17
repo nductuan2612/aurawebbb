@@ -1,0 +1,73 @@
+<%- include('../partials/head', { title: 'Chính sách bảo vệ dữ liệu cá nhân' }) %>
+<div class="wrap legal">
+  <div class="measure">
+    <h1>Chính sách bảo vệ dữ liệu cá nhân</h1>
+    <p class="muted small">Phiên bản <%= shop.policies.consentVersion %></p>
+    <% if (shop.legal.isSample) { %>
+      <div class="notice warn sample">Nội dung mẫu cho đồ án học phần. Cần đối chiếu với Nghị định 13/2023/NĐ-CP, Luật Bảo vệ dữ liệu cá nhân và các văn bản hướng dẫn hiện hành trước khi dùng cho mục đích khác.</div>
+    <% } %>
+    <p><%= shop.legal.companyName %> (sau đây gọi là "chúng tôi") là bên kiểm soát dữ liệu cá nhân thu thập qua website <%= shop.name %>. Trang này giải thích chúng tôi thu thập gì, vì sao, giữ bao lâu và bạn có những quyền nào.</p>
+
+    <h2>1. Dữ liệu chúng tôi thu thập</h2>
+    <table>
+      <tbody>
+        <tr><th scope="row">Tài khoản</th><td>Họ tên, email, số điện thoại, ngày sinh (không bắt buộc), mật khẩu ở dạng đã băm.</td></tr>
+        <tr><th scope="row">Giao hàng</th><td>Tên người nhận, số điện thoại, địa chỉ giao hàng trong sổ địa chỉ và bản sao địa chỉ lưu theo từng đơn.</td></tr>
+        <tr><th scope="row">Đơn hàng</th><td>Sản phẩm, giá tại thời điểm đặt, mã giảm giá, trạng thái, lịch sử thanh toán và vận chuyển.</td></tr>
+        <tr><th scope="row">Kỹ thuật</th><td>Địa chỉ IP trong nhật ký thanh toán, cookie phiên (xem mục 7).</td></tr>
+      </tbody>
+    </table>
+
+    <h2>2. Mục đích xử lý</h2>
+    <ul>
+      <li>Tạo và quản lý tài khoản của bạn.</li>
+      <li>Xử lý đơn hàng: xác nhận, đóng gói, giao hàng, thanh toán, đổi trả, hoàn tiền.</li>
+      <li>Liên hệ về đơn hàng và hỗ trợ sau bán.</li>
+      <li>Bảo vệ hệ thống: chống đăng nhập trái phép, chống gian lận thanh toán.</li>
+    </ul>
+
+    <h2>3. Cơ sở xử lý: sự đồng ý của bạn</h2>
+    <p>Chúng tôi xử lý dữ liệu của bạn dựa trên sự đồng ý. Khi đăng ký và khi đặt hàng, bạn tự tích ô đồng ý xử lý dữ liệu cá nhân. Ô này không được đánh dấu sẵn, và nếu bạn không tích, chúng tôi không tạo tài khoản hay đơn hàng. Thời điểm và phiên bản chính sách bạn đồng ý được lưu cùng tài khoản và đơn hàng.</p>
+
+    <h2>4. Thời gian lưu trữ</h2>
+    <p>Dữ liệu tài khoản được giữ trong thời gian tài khoản còn hoạt động hoặc đến khi bạn yêu cầu xóa. Thông tin đơn hàng được giữ trong thời hạn cần thiết để thực hiện nghĩa vụ kế toán, thuế và giải quyết khiếu nại theo quy định pháp luật.</p>
+
+    <h2>5. Chia sẻ dữ liệu</h2>
+    <ul>
+      <li>Đơn vị vận chuyển: nhận tên, số điện thoại và địa chỉ để giao hàng.</li>
+      <li>Cổng thanh toán: nhận mã đơn và số tiền khi bạn chọn thanh toán online. Chúng tôi không lưu số thẻ của bạn.</li>
+      <li>Cơ quan nhà nước: khi pháp luật yêu cầu.</li>
+      <li>Chúng tôi không bán dữ liệu cá nhân của bạn cho bên thứ ba.</li>
+    </ul>
+
+    <h2>6. Quyền của bạn</h2>
+    <p>Bạn có quyền được biết, truy cập, chỉnh sửa, rút lại sự đồng ý, yêu cầu xóa hoặc hạn chế xử lý dữ liệu, phản đối xử lý và khiếu nại. Bạn tự sửa họ tên, số điện thoại, ngày sinh và sổ địa chỉ trong mục "Tài khoản". Với các quyền còn lại, gửi yêu cầu tới <a href="mailto:<%= shop.legal.privacyContact %>"><%= shop.legal.privacyContact %></a>. Khi bạn rút lại sự đồng ý, chúng tôi ngừng xử lý trong phạm vi pháp luật cho phép, riêng dữ liệu đơn hàng vẫn được giữ nếu pháp luật yêu cầu.</p>
+
+    <h2>7. Cookie</h2>
+    <table>
+      <thead><tr><th scope="col">Cookie</th><th scope="col">Dùng để</th><th scope="col">Thời hạn</th></tr></thead>
+      <tbody>
+        <tr><td>ivy.sid</td><td>Giữ phiên đăng nhập của bạn</td><td>Tối đa 14 ngày</td></tr>
+        <tr><td>ivy_csrf</td><td>Chống giả mạo yêu cầu (CSRF) khi gửi biểu mẫu</td><td>24 giờ</td></tr>
+        <tr><td>ivy_guest</td><td>Nhận diện giỏ hàng khi bạn chưa đăng nhập, để gộp vào tài khoản khi đăng nhập</td><td>90 ngày</td></tr>
+      </tbody>
+    </table>
+    <p>Đây là các cookie cần thiết để website hoạt động. Chúng tôi không dùng cookie quảng cáo.</p>
+
+    <h2>8. Biện pháp bảo mật</h2>
+    <ul>
+      <li>Mật khẩu được băm bằng bcrypt, không lưu mật khẩu gốc.</li>
+      <li>Truy vấn cơ sở dữ liệu dùng tham số hóa, nội dung hiển thị được thoát ký tự đặc biệt và có chính sách nội dung (CSP) để chống XSS.</li>
+      <li>Giới hạn tần suất và khóa tạm khi đăng nhập sai nhiều lần.</li>
+      <li>Khu vực quản trị chỉ dành cho tài khoản quản trị viên; khách hàng không truy cập được.</li>
+      <li>Thông báo thanh toán từ cổng được kiểm tra chữ ký và xử lý chống lặp trước khi ghi nhận.</li>
+    </ul>
+
+    <h2>9. Trẻ em</h2>
+    <p>Website không dành cho người chưa đủ 16 tuổi tự đăng ký. Nếu cần xử lý dữ liệu của trẻ em, cần có sự đồng ý của cha mẹ hoặc người giám hộ theo quy định.</p>
+
+    <h2>10. Liên hệ</h2>
+    <p>Mọi câu hỏi về dữ liệu cá nhân, gửi tới <a href="mailto:<%= shop.legal.privacyContact %>"><%= shop.legal.privacyContact %></a> hoặc gọi <%= shop.legal.phone %>.</p>
+  </div>
+</div>
+<%- include('../partials/foot') %>

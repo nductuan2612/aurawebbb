@@ -1,0 +1,89 @@
+<%- include('../partials/admin-head') %>
+<%
+  var unit = group === 'month' ? 'tháng' : 'ngày';
+  var active = series.filter(function (s) { return s.orders > 0 || s.revenue > 0; });
+%>
+<h1>Báo cáo</h1>
+<p class="muted">Doanh thu tính trên đơn đang ở trạng thái "Đã giao", gom theo ngày giao hàng (giờ Việt Nam). Đơn sau đó bị trả hàng không còn được tính.</p>
+
+<form class="toolbar" method="get" action="/admin/reports">
+  <div class="field"><label for="r-from">Từ ngày</label><input id="r-from" type="date" name="from" value="<%= fromStr %>"></div>
+  <div class="field"><label for="r-to">Đến ngày</label><input id="r-to" type="date" name="to" value="<%= toStr %>"></div>
+  <div class="field">
+    <label for="r-group">Gom theo</label>
+    <select id="r-group" name="group">
+      <option value="day"<%= group === 'day' ? ' selected' : '' %>>Ngày</option>
+      <option value="month"<%= group === 'month' ? ' selected' : '' %>>Tháng</option>
+    </select>
+  </div>
+  <button class="btn btn-sm" type="submit">Xem báo cáo</button>
+</form>
+<% if (autoGrouped) { %><div class="notice">Khoảng thời gian dài hơn 92 ngày nên báo cáo được gom theo tháng để biểu đồ dễ đọc.</div><% } %>
+
+<div class="kpis">
+  <div class="kpi"><p class="kpi-label">Doanh thu</p><p class="kpi-value"><%= vnd(totals.revenue) %></p></div>
+  <div class="kpi"><p class="kpi-label">Số đơn đã giao</p><p class="kpi-value"><%= totals.orders %></p></div>
+  <div class="kpi"><p class="kpi-label">Giá trị trung bình mỗi đơn</p><p class="kpi-value"><%= vnd(totals.average) %></p></div>
+</div>
+
+<h2>Doanh thu theo <%= unit %></h2>
+<% if (totals.revenue > 0) { %>
+  <svg class="chart" viewBox="0 0 <%= chart.W %> <%= chart.H %>" role="img" aria-label="Biểu đồ doanh thu theo <%= unit %>">
+    <line class="axis" x1="0" y1="<%= chart.baseY %>" x2="<%= chart.W %>" y2="<%= chart.baseY %>"></line>
+    <% chart.bars.forEach(function (b) { if (b.h > 0) { %>
+      <rect class="bar" x="<%= b.x %>" y="<%= b.y %>" width="<%= b.w %>" height="<%= b.h %>"><title><%= b.label %>: <%= vnd(b.revenue) %>, <%= b.orders %> đơn</title></rect>
+    <% } }) %>
+    <% chart.ticks.forEach(function (t) { %><text class="tick" x="<%= t.x %>" y="<%= chart.labelY %>" text-anchor="middle"><%= t.label %></text><% }) %>
+  </svg>
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr><th scope="col"><%= group === 'month' ? 'Tháng' : 'Ngày' %></th><th scope="col" class="num">Số đơn</th><th scope="col" class="num">Doanh thu</th></tr></thead>
+      <tbody>
+        <% active.forEach(function (s) { %>
+          <tr><td><%= s.label %></td><td class="num"><%= s.orders %></td><td class="num"><%= vnd(s.revenue) %></td></tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } else { %>
+  <p class="empty">Không có đơn nào được giao trong khoảng thời gian này.</p>
+<% } %>
+
+<div class="two-col">
+  <section aria-labelledby="r-top">
+    <h2 id="r-top">Sản phẩm bán chạy</h2>
+    <% if (!topProducts.length) { %>
+      <p class="muted">Chưa có dữ liệu.</p>
+    <% } else { %>
+      <div class="table-wrap">
+        <table class="data">
+          <thead><tr><th scope="col">Sản phẩm</th><th scope="col" class="num">Đã bán</th><th scope="col" class="num">Doanh thu</th></tr></thead>
+          <tbody>
+            <% topProducts.forEach(function (p) { %>
+              <tr>
+                <td><a href="/products/<%= p.slug %>"><%= p.name %></a><br><span class="muted small"><%= p.code %></span></td>
+                <td class="num"><%= p.qty %></td>
+                <td class="num"><%= vnd(p.revenue) %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </section>
+
+  <section aria-labelledby="r-status">
+    <h2 id="r-status">Đơn đặt trong kỳ theo trạng thái</h2>
+    <div class="table-wrap">
+      <table class="data">
+        <thead><tr><th scope="col">Trạng thái</th><th scope="col" class="num">Số đơn</th></tr></thead>
+        <tbody>
+          <% S.ORDER.forEach(function (c) { %>
+            <tr><td><span class="badge <%= S.badgeClass(c) %>"><%= S.label(c) %></span></td><td class="num"><%= statusCounts[c] || 0 %></td></tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<%- include('../partials/admin-foot') %>

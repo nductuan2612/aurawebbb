@@ -1,0 +1,51 @@
+<%- include('../partials/admin-head') %>
+<p class="small"><a href="/admin/products">Danh sách sản phẩm</a></p>
+<h1>Biến thể: <%= product.name %></h1>
+<p class="muted">Mỗi biến thể là một tổ hợp size và màu, có SKU, giá và tồn kho riêng. Mã sản phẩm <%= product.code %>. <a href="/admin/products/<%= product.id %>/edit">Sửa thông tin sản phẩm</a></p>
+
+<section class="panel" aria-labelledby="v-add">
+  <h2 id="v-add">Thêm biến thể</h2>
+  <form class="variant-form" action="/admin/products/<%= product.id %>/variants" method="post">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+    <div><label for="n-sku">SKU</label><input id="n-sku" type="text" name="sku" maxlength="50" required></div>
+    <div>
+      <label for="n-size">Size</label>
+      <select id="n-size" name="size"><% sizes.forEach(function (s) { %><option value="<%= s %>"><%= s %></option><% }) %></select>
+    </div>
+    <div><label for="n-color">Tên màu</label><input id="n-color" type="text" name="color" maxlength="50" required></div>
+    <div><label for="n-hex">Màu</label><input id="n-hex" type="color" name="hex" value="#1c1c1c"></div>
+    <div><label for="n-price">Giá bán (₫)</label><input id="n-price" type="text" inputmode="numeric" name="price" required></div>
+    <div><label for="n-cmp">Giá gốc (₫)</label><input id="n-cmp" type="text" inputmode="numeric" name="compareAt" placeholder="Để trống nếu không giảm giá"></div>
+    <div><label for="n-stock">Tồn kho</label><input id="n-stock" type="text" inputmode="numeric" name="stock" value="0"></div>
+    <div class="check-cell"><input id="n-act" type="checkbox" name="isActive" checked><label for="n-act">Đang bán</label></div>
+    <button class="btn btn-sm" type="submit">Thêm</button>
+  </form>
+</section>
+
+<h2>Các biến thể hiện có (<%= variants.length %>)</h2>
+<% if (!variants.length) { %>
+  <p class="empty">Sản phẩm chưa có biến thể nào nên chưa bán được. Hãy thêm biến thể ở trên.</p>
+<% } else { %>
+  <% variants.forEach(function (v) { %>
+    <form class="variant-form" action="/admin/products/<%= product.id %>/variants/<%= v.id %>" method="post">
+      <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+      <div><label for="sku-<%= v.id %>">SKU</label><input id="sku-<%= v.id %>" type="text" name="sku" value="<%= v.sku %>" maxlength="50" required></div>
+      <div>
+        <label for="size-<%= v.id %>">Size</label>
+        <select id="size-<%= v.id %>" name="size"><% sizes.forEach(function (s) { %><option value="<%= s %>"<%= v.size === s ? ' selected' : '' %>><%= s %></option><% }) %></select>
+      </div>
+      <div><label for="color-<%= v.id %>">Tên màu</label><input id="color-<%= v.id %>" type="text" name="color" value="<%= v.color %>" maxlength="50" required></div>
+      <div><label for="hex-<%= v.id %>">Màu</label><input id="hex-<%= v.id %>" type="color" name="hex" value="<%= String(v.hex).toLowerCase() %>"></div>
+      <div><label for="price-<%= v.id %>">Giá bán (₫)</label><input id="price-<%= v.id %>" type="text" inputmode="numeric" name="price" value="<%= v.price %>" required></div>
+      <div><label for="cmp-<%= v.id %>">Giá gốc (₫)</label><input id="cmp-<%= v.id %>" type="text" inputmode="numeric" name="compareAt" value="<%= v.compareAt || '' %>"></div>
+      <div><label for="stock-<%= v.id %>">Tồn kho</label><input id="stock-<%= v.id %>" type="text" inputmode="numeric" name="stock" value="<%= v.stock %>"></div>
+      <div class="check-cell"><input id="act-<%= v.id %>" type="checkbox" name="isActive"<%= v.isActive ? ' checked' : '' %>><label for="act-<%= v.id %>">Đang bán</label></div>
+      <div class="row">
+        <button class="btn btn-sm" type="submit">Lưu</button>
+        <button class="btn btn-danger btn-sm" type="submit" formaction="/admin/products/<%= product.id %>/variants/<%= v.id %>/delete" formnovalidate data-confirm="Xóa biến thể <%= v.sku %>? Biến thể đã có trong đơn hàng sẽ không xóa được, khi đó hãy bỏ tích Đang bán.">Xóa</button>
+      </div>
+    </form>
+  <% }) %>
+  <p class="muted small">Đổi tồn kho tại đây được ghi vào nhật ký kho với lý do điều chỉnh của quản trị viên.</p>
+<% } %>
+<%- include('../partials/admin-foot') %>

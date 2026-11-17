@@ -1,0 +1,43 @@
+<%- include('../partials/admin-head') %>
+<div class="row spread">
+  <h1>Danh mục</h1>
+  <a class="btn" href="/admin/categories/new">Thêm danh mục</a>
+</div>
+<p class="muted">Danh mục có hai cấp. Danh mục bị ẩn không hiện trên cửa hàng, các sản phẩm trong đó cũng không xuất hiện trong danh sách.</p>
+
+<% if (!categories.length) { %>
+  <p class="empty">Chưa có danh mục nào.</p>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th scope="col">Tên</th><th scope="col">Đường dẫn</th><th scope="col">Danh mục cha</th>
+          <th scope="col" class="num">Sản phẩm</th><th scope="col" class="num">Thứ tự</th><th scope="col">Trạng thái</th>
+          <th scope="col"><span class="sr-only">Thao tác</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% categories.forEach(function (c) { %>
+          <tr>
+            <td><% if (c.parentId) { %><span class="indent"></span><% } %><strong><%= c.name %></strong></td>
+            <td><%= c.slug %></td>
+            <td><%= c.parentName || '-' %></td>
+            <td class="num"><%= c.productCount %></td>
+            <td class="num"><%= c.sortOrder %></td>
+            <td><span class="badge <%= c.isActive ? 'is-on' : 'is-off' %>"><%= c.isActive ? 'Đang hiện' : 'Đã ẩn' %></span></td>
+            <td class="actions">
+              <a class="btn btn-outline btn-sm" href="/admin/categories/<%= c.id %>/edit">Sửa</a>
+              <form action="/admin/categories/<%= c.id %>/toggle" method="post">
+                <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+                <input type="hidden" name="active" value="<%= c.isActive ? '0' : '1' %>">
+                <button class="btn btn-outline btn-sm" type="submit"><%= c.isActive ? 'Ẩn' : 'Hiện lại' %></button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+<%- include('../partials/admin-foot') %>

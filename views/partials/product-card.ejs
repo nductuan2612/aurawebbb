@@ -1,0 +1,25 @@
+<article class="card">
+  <a class="card-link" href="/products/<%= p.slug %>">
+    <div class="card-media" data-optional-holder>
+      <img src="<%= p.image || '/images/placeholder.svg' %>" alt="<%= p.name %>" width="600" height="800" loading="lazy">
+      <% if (p.image2) { %><img class="card-alt" src="<%= p.image2 %>" alt="" width="600" height="800" loading="lazy" data-optional><% } %>
+      <% if (p.totalStock <= 0) { %>
+        <span class="tag tag-out">Hết hàng</span>
+      <% } else if (p.compareAt && p.compareAt > p.minPrice) { %>
+        <span class="tag tag-sale">-<%= percentOff(p.minPrice, p.compareAt) %>%</span>
+      <% } %>
+    </div>
+    <h3 class="card-name"><%= p.name %></h3>
+  </a>
+  <div class="card-meta">
+    <p class="price<%= p.compareAt && p.compareAt > p.minPrice ? ' price-sale' : '' %>">
+      <%= p.minPrice === p.maxPrice ? '' : 'Từ ' %><%= vnd(p.minPrice) %><% if (p.compareAt && p.compareAt > p.minPrice) { %><s class="compare"><%= vnd(p.compareAt) %></s><% } %>
+    </p>
+    <ul class="dots" aria-label="Màu sắc">
+      <% (p.colors || []).slice(0, 5).forEach(function (c) { %>
+        <li><svg viewBox="0 0 16 16" width="14" height="14" role="img" aria-label="<%= c.name %>"><circle cx="8" cy="8" r="6.5" fill="<%= c.hex %>" stroke="#bdbab3"/></svg></li>
+      <% }) %>
+      <% if ((p.colors || []).length > 5) { %><li class="muted small">+<%= p.colors.length - 5 %></li><% } %>
+    </ul>
+  </div>
+</article>

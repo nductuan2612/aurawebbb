@@ -1,0 +1,88 @@
+<%
+  var p = product || {};
+  var errs = locals.errors || {};
+  var editing = Boolean(p.id);
+  var feat = p.isFeatured === true || p.isFeatured === 1 || p.isFeatured === 'on';
+  var act = p.isActive === true || p.isActive === 1 || p.isActive === 'on';
+%>
+<%- include('../partials/admin-head') %>
+<p class="small"><a href="/admin/products">Danh sách sản phẩm</a></p>
+<h1><%= editing ? 'Sửa sản phẩm' : 'Thêm sản phẩm' %></h1>
+<% if (editing) { %>
+  <p><a class="btn btn-outline btn-sm" href="/admin/products/<%= p.id %>/variants">Quản lý biến thể: size, màu, giá, SKU, tồn kho</a></p>
+<% } else { %>
+  <p class="muted">Sau khi lưu, bạn chuyển sang trang thêm biến thể (size, màu, giá, SKU, tồn kho riêng).</p>
+<% } %>
+
+<div class="panel form-panel">
+  <% if (errs.general) { %><div class="notice error" role="alert"><%= errs.general %></div><% } %>
+  <form action="<%= editing ? '/admin/products/' + p.id + '/edit' : '/admin/products/new' %>" method="post">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+
+    <div class="grid-2">
+      <div class="field<%= errs.code ? ' has-error' : '' %>">
+        <label for="p-code">Mã sản phẩm</label>
+        <input id="p-code" type="text" name="code" value="<%= p.code || '' %>" maxlength="30" required>
+        <span class="hint">Ví dụ P001. Mã này cũng là tên file ảnh: P001.jpg.</span>
+        <% if (errs.code) { %><p class="field-error" role="alert"><%= errs.code %></p><% } %>
+      </div>
+      <div class="field<%= errs.categoryId ? ' has-error' : '' %>">
+        <label for="p-cat">Danh mục</label>
+        <select id="p-cat" name="categoryId" required>
+          <option value="">Chọn danh mục</option>
+          <% categories.forEach(function (c) { %>
+            <option value="<%= c.id %>"<%= String(p.categoryId || '') === String(c.id) ? ' selected' : '' %>><%= c.parentName ? c.parentName + ' / ' + c.name : c.name %></option>
+          <% }) %>
+        </select>
+        <% if (errs.categoryId) { %><p class="field-error" role="alert"><%= errs.categoryId %></p><% } %>
+      </div>
+    </div>
+
+    <div class="field<%= errs.name ? ' has-error' : '' %>">
+      <label for="p-name">Tên sản phẩm</label>
+      <input id="p-name" type="text" name="name" value="<%= p.name || '' %>" maxlength="200" data-slug-from="p-slug" required>
+      <% if (errs.name) { %><p class="field-error" role="alert"><%= errs.name %></p><% } %>
+    </div>
+
+    <div class="field<%= errs.slug ? ' has-error' : '' %>">
+      <label for="p-slug">Đường dẫn (slug)</label>
+      <input id="p-slug" type="text" name="slug" value="<%= p.slug || '' %>" maxlength="220" placeholder="Tự tạo từ tên nếu để trống">
+      <span class="hint">Chữ thường không dấu, số và dấu gạch ngang.</span>
+      <% if (errs.slug) { %><p class="field-error" role="alert"><%= errs.slug %></p><% } %>
+    </div>
+
+    <div class="field<%= errs.material ? ' has-error' : '' %>">
+      <label for="p-material">Chất liệu</label>
+      <input id="p-material" type="text" name="material" value="<%= p.material || '' %>" maxlength="200">
+      <% if (errs.material) { %><p class="field-error" role="alert"><%= errs.material %></p><% } %>
+    </div>
+
+    <div class="field<%= errs.description ? ' has-error' : '' %>">
+      <label for="p-desc">Mô tả</label>
+      <textarea id="p-desc" name="description" maxlength="5000"><%= p.description || '' %></textarea>
+      <% if (errs.description) { %><p class="field-error" role="alert"><%= errs.description %></p><% } %>
+    </div>
+
+    <div class="field<%= errs.images ? ' has-error' : '' %>">
+      <label for="p-images">Ảnh sản phẩm (mỗi dòng một đường dẫn)</label>
+      <textarea id="p-images" name="images" maxlength="2000" placeholder="/images/products/P001.jpg"><%= p.images || '' %></textarea>
+      <span class="hint">Ảnh đầu tiên là ảnh chính, ảnh thứ hai hiện khi rê chuột vào thẻ sản phẩm. Đặt file vào thư mục public/images/products rồi ghi đường dẫn dạng /images/products/P001.jpg, hoặc dùng địa chỉ https.</span>
+      <% if (errs.images) { %><p class="field-error" role="alert"><%= errs.images %></p><% } %>
+    </div>
+
+    <div class="check field">
+      <input type="checkbox" id="p-feat" name="isFeatured"<%= feat ? ' checked' : '' %>>
+      <label for="p-feat">Sản phẩm nổi bật (hiện ở trang chủ)</label>
+    </div>
+    <div class="check field">
+      <input type="checkbox" id="p-act" name="isActive"<%= act ? ' checked' : '' %>>
+      <label for="p-act">Đang bán</label>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn" type="submit">Lưu sản phẩm</button>
+      <a class="btn btn-outline" href="/admin/products">Hủy</a>
+    </div>
+  </form>
+</div>
+<%- include('../partials/admin-foot') %>

@@ -1,0 +1,93 @@
+<%
+  var d = discount || {};
+  var errs = locals.errors || {};
+  var editing = Boolean(d.id);
+  var type = d.discountType === 'FIXED' ? 'FIXED' : 'PERCENT';
+  var act = d.isActive === true || d.isActive === 1 || d.isActive === 'on';
+%>
+<%- include('../partials/admin-head') %>
+<p class="small"><a href="/admin/discounts">Danh sách mã giảm giá</a></p>
+<h1><%= editing ? 'Sửa mã giảm giá' : 'Thêm mã giảm giá' %></h1>
+
+<div class="panel form-panel">
+  <% if (errs.general) { %><div class="notice error" role="alert"><%= errs.general %></div><% } %>
+  <% if (editing) { %><p class="muted small">Mã này đã được dùng <%= d.usedCount || 0 %> lượt.</p><% } %>
+  <form action="<%= editing ? '/admin/discounts/' + d.id + '/edit' : '/admin/discounts/new' %>" method="post">
+    <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+
+    <div class="grid-2">
+      <div class="field<%= errs.code ? ' has-error' : '' %>">
+        <label for="d-code">Mã giảm giá</label>
+        <input id="d-code" type="text" name="code" value="<%= d.code || '' %>" maxlength="30" autocomplete="off" required>
+        <span class="hint">3 đến 30 ký tự: chữ không dấu, số, gạch ngang hoặc gạch dưới. Hệ thống tự đổi sang chữ hoa.</span>
+        <% if (errs.code) { %><p class="field-error" role="alert"><%= errs.code %></p><% } %>
+      </div>
+      <div class="field<%= errs.description ? ' has-error' : '' %>">
+        <label for="d-desc">Mô tả</label>
+        <input id="d-desc" type="text" name="description" value="<%= d.description || '' %>" maxlength="255">
+        <% if (errs.description) { %><p class="field-error" role="alert"><%= errs.description %></p><% } %>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field<%= errs.discountType ? ' has-error' : '' %>">
+        <label for="d-type">Loại giảm giá</label>
+        <select id="d-type" name="discountType">
+          <option value="PERCENT"<%= type === 'PERCENT' ? ' selected' : '' %>>Theo phần trăm</option>
+          <option value="FIXED"<%= type === 'FIXED' ? ' selected' : '' %>>Số tiền cố định</option>
+        </select>
+        <% if (errs.discountType) { %><p class="field-error" role="alert"><%= errs.discountType %></p><% } %>
+      </div>
+      <div class="field<%= errs.value ? ' has-error' : '' %>">
+        <label for="d-value">Giá trị giảm</label>
+        <input id="d-value" type="text" inputmode="numeric" name="value" value="<%= d.value || '' %>" required>
+        <span class="hint">Theo phần trăm: từ 1 đến 100. Số tiền cố định: nhập số tiền bằng đồng.</span>
+        <% if (errs.value) { %><p class="field-error" role="alert"><%= errs.value %></p><% } %>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field<%= errs.maxAmount ? ' has-error' : '' %>">
+        <label for="d-max">Mức giảm tối đa (₫)</label>
+        <input id="d-max" type="text" inputmode="numeric" name="maxAmount" value="<%= d.maxAmount || '' %>" placeholder="Để trống nếu không giới hạn">
+        <span class="hint">Chỉ dùng với loại theo phần trăm.</span>
+        <% if (errs.maxAmount) { %><p class="field-error" role="alert"><%= errs.maxAmount %></p><% } %>
+      </div>
+      <div class="field<%= errs.minOrderValue ? ' has-error' : '' %>">
+        <label for="d-min">Giá trị đơn tối thiểu (₫)</label>
+        <input id="d-min" type="text" inputmode="numeric" name="minOrderValue" value="<%= d.minOrderValue === undefined || d.minOrderValue === null ? 0 : d.minOrderValue %>">
+        <% if (errs.minOrderValue) { %><p class="field-error" role="alert"><%= errs.minOrderValue %></p><% } %>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field<%= errs.startsAt ? ' has-error' : '' %>">
+        <label for="d-start">Bắt đầu (giờ Việt Nam)</label>
+        <input id="d-start" type="datetime-local" name="startsAt" value="<%= d.startsAt || '' %>" required>
+        <% if (errs.startsAt) { %><p class="field-error" role="alert"><%= errs.startsAt %></p><% } %>
+      </div>
+      <div class="field<%= errs.endsAt ? ' has-error' : '' %>">
+        <label for="d-end">Kết thúc (giờ Việt Nam)</label>
+        <input id="d-end" type="datetime-local" name="endsAt" value="<%= d.endsAt || '' %>" required>
+        <% if (errs.endsAt) { %><p class="field-error" role="alert"><%= errs.endsAt %></p><% } %>
+      </div>
+    </div>
+
+    <div class="field<%= errs.usageLimit ? ' has-error' : '' %>">
+      <label for="d-limit">Số lượt dùng tối đa</label>
+      <input id="d-limit" type="text" inputmode="numeric" name="usageLimit" value="<%= d.usageLimit || '' %>" placeholder="Để trống nếu không giới hạn">
+      <% if (errs.usageLimit) { %><p class="field-error" role="alert"><%= errs.usageLimit %></p><% } %>
+    </div>
+
+    <div class="check field">
+      <input type="checkbox" id="d-active" name="isActive"<%= act ? ' checked' : '' %>>
+      <label for="d-active">Đang áp dụng</label>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn" type="submit">Lưu mã giảm giá</button>
+      <a class="btn btn-outline" href="/admin/discounts">Hủy</a>
+    </div>
+  </form>
+</div>
+<%- include('../partials/admin-foot') %>

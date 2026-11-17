@@ -1,0 +1,112 @@
+<%- include('../partials/head', { title: 'Đơn ' + order.code }) %>
+<div class="wrap">
+  <nav class="crumbs" aria-label="Đường dẫn">
+    <ol>
+      <li><a href="/orders">Đơn hàng của tôi</a></li>
+      <li aria-current="page"><%= order.code %></li>
+    </ol>
+  </nav>
+  <div class="page-title row spread">
+    <div>
+      <h1>Đơn <%= order.code %></h1>
+      <p>Đặt lúc <%= fmtDateTime(order.placedAt) %></p>
+    </div>
+    <div class="row">
+      <span class="badge <%= S.badgeClass(order.status) %>"><%= S.label(order.status) %></span>
+      <span class="badge <%= S.paymentBadgeClass(order.paymentState) %>"><%= S.paymentLabel(order.paymentMethod, order.paymentState) %></span>
+    </div>
+  </div>
+
+  <% if (flash) { %><div class="notice <%= flash.type === 'ok' ? 'ok' : (flash.type === 'error' ? 'error' : '') %>" role="status"><%= flash.text %></div><% } %>
+  <% if (order.needsRefund) { %>
+    <div class="notice warn" role="status">Đơn hàng đã đóng và bạn đã thanh toán trước đó. Cửa hàng sẽ hoàn tiền cho bạn và cập nhật trạng thái tại trang này.</div>
+  <% } %>
+
+  <div class="order-grid">
+    <div>
+      <section class="panel" aria-labelledby="o-items">
+        <h2 id="o-items">Sản phẩm</h2>
+        <ul class="lines">
+          <% order.items.forEach(function (it) { %>
+            <li>
+              <img src="<%= it.image || '/images/placeholder.svg' %>" alt="" width="64" height="85" loading="lazy">
+              <div>
+                <p><a href="/products/<%= it.slug %>"><%= it.name %></a></p>
+                <p class="muted small">Màu <%= it.color %>, size <%= it.size %>, SKU <%= it.sku %></p>
+                <p class="muted small"><%= vnd(it.unitPrice) %> x <%= it.quantity %></p>
+                <% if (order.status === 'DELIVERED') { %>
+                  <% if (it.reviewed) { %><p class="muted small">Bạn đã đánh giá sản phẩm này.</p>
+                  <% } else { %><p class="small"><a href="/products/<%= it.slug %>#reviews">Viết đánh giá</a></p><% } %>
+                <% } %>
+              </div>
+              <strong><%= vnd(it.lineTotal) %></strong>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="o-history">
+        <h2 id="o-history">Lịch sử đơn hàng</h2>
+        <ol class="timeline">
+          <% order.history.forEach(function (h) { %>
+            <% var who = h.changedByRole === 'ADMIN' ? 'Cửa hàng' : (h.changedByRole === 'CUSTOMER' ? 'Bạn' : ''); %>
+            <li>
+              <p><strong><%= S.label(h.toStatus) %></strong></p>
+              <% if (h.note) { %><p class="small"><%= h.note %></p><% } %>
+              <p class="muted small"><%= fmtDateTime(h.changedAt) %><%= who ? ', ' + who : '' %></p>
+            </li>
+          <% }) %>
+        </ol>
+      </section>
+    </div>
+
+    <div>
+      <section class="panel" aria-labelledby="o-total">
+        <h2 id="o-total">Thanh toán</h2>
+        <dl class="sum">
+          <dt>Tạm tính</dt><dd><%= vnd(order.subtotal) %></dd>
+          <% if (order.discountAmount > 0) { %><dt>Giảm giá<%= order.discountCode ? ' (' + order.discountCode + ')' : '' %></dt><dd>-<%= vnd(order.discountAmount) %></dd><% } %>
+          <dt>Phí giao hàng</dt><dd><%= order.shippingFee === 0 ? 'Miễn phí' : vnd(order.shippingFee) %></dd>
+          <dt class="total">Tổng cộng</dt><dd class="total"><%= vnd(order.total) %></dd>
+        </dl>
+        <p class="small">Phương thức: <%= order.paymentMethod === 'COD' ? 'Thanh toán khi nhận hàng' : 'Thanh toán online' %></p>
+        <% if (order.canPayOnline) { %>
+          <% if (gatewayReady) { %>
+            <form action="/orders/<%= order.code %>/pay" method="post">
+              <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+              <button class="btn btn-block" type="submit">Thanh toán online</button>
+            </form>
+          <% } else { %>
+            <p class="muted small">Cổng thanh toán online chưa được cấu hình. Vui lòng liên hệ cửa hàng.</p>
+          <% } %>
+        <% } %>
+      </section>
+
+      <section class="panel" aria-labelledby="o-addr">
+        <h2 id="o-addr">Địa chỉ giao hàng</h2>
+        <p><strong><%= order.shipName %></strong><br><%= order.shipPhone %></p>
+        <p><%= order.shipStreet %>, <%= order.shipWard %><%= order.shipDistrict ? ', ' + order.shipDistrict : '' %>, <%= order.shipProvince %></p>
+        <p class="muted small">Địa chỉ được lưu lại tại thời điểm đặt hàng, sửa sổ địa chỉ sau này không đổi đơn đã đặt.</p>
+        <% if (order.note) { %><p class="small">Ghi chú: <%= order.note %></p><% } %>
+      </section>
+
+      <% if (order.shipping) { %>
+        <section class="panel" aria-labelledby="o-ship">
+          <h2 id="o-ship">Vận chuyển</h2>
+          <p><%= order.shipping.carrier %></p>
+          <p>Mã vận đơn: <strong><%= order.shipping.trackingCode %></strong></p>
+          <p class="muted small">Bàn giao lúc <%= fmtDateTime(order.shipping.shippedAt) %></p>
+        </section>
+      <% } %>
+
+      <% if (order.canCancel) { %>
+        <form action="/orders/<%= order.code %>/cancel" method="post">
+          <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+          <button class="btn btn-danger btn-block" type="submit" data-confirm="Bạn chắc chắn muốn hủy đơn <%= order.code %>?">Hủy đơn hàng</button>
+          <p class="muted small">Chỉ hủy được khi đơn còn ở trạng thái "Chờ xác nhận".</p>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

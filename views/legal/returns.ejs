@@ -1,0 +1,55 @@
+<%- include('../partials/head', { title: 'Chính sách đổi trả' }) %>
+<div class="wrap legal">
+  <div class="measure">
+    <h1>Chính sách đổi trả</h1>
+    <% if (shop.legal.isSample) { %>
+      <div class="notice warn sample">Nội dung mẫu cho đồ án học phần, soạn theo đặc thù ngành thời trang. Cần đối chiếu với quy định pháp luật hiện hành về bảo vệ quyền lợi người tiêu dùng trước khi dùng cho mục đích khác.</div>
+    <% } %>
+    <p>Mặc quần áo cần vừa size và đúng màu. Vì vậy bạn được đổi size hoặc màu trong <strong><%= shop.policies.returnDays %> ngày</strong> kể từ ngày nhận hàng.</p>
+
+    <h2>1. Điều kiện sản phẩm được đổi trả</h2>
+    <ul>
+      <li>Còn nguyên tem mác, nhãn giá và bao bì (nếu có).</li>
+      <li>Chưa giặt, chưa sửa, chưa cắt may lại và chưa qua sử dụng.</li>
+      <li>Không dính mùi nước hoa, mỹ phẩm, khói thuốc, vết bẩn hoặc vết trang điểm.</li>
+      <li>Có mã đơn hàng để đối chiếu.</li>
+    </ul>
+
+    <h2>2. Sản phẩm không áp dụng đổi trả</h2>
+    <ul>
+      <li>Đồ lót, đồ bơi và phụ kiện đeo sát người, vì lý do vệ sinh, trừ khi sản phẩm bị lỗi hoặc giao sai.</li>
+      <li>Sản phẩm đã giặt, đã sửa hoặc đã qua sử dụng.</li>
+    </ul>
+
+    <h2>3. Các hình thức</h2>
+    <table>
+      <thead><tr><th scope="col">Trường hợp</th><th scope="col">Cách xử lý</th><th scope="col">Phí vận chuyển đổi trả</th></tr></thead>
+      <tbody>
+        <tr><td>Không vừa size hoặc muốn đổi màu</td><td>Đổi sang size hoặc màu khác của cùng mẫu, nếu còn hàng</td><td>Khách chịu</td></tr>
+        <tr><td>Muốn đổi sang mẫu khác</td><td>Đổi và thanh toán phần chênh lệch (nếu có)</td><td>Khách chịu</td></tr>
+        <tr><td>Sản phẩm lỗi, rách, sai màu so với mô tả hoặc giao sai hàng</td><td>Đổi sản phẩm mới hoặc hoàn tiền</td><td>Cửa hàng chịu</td></tr>
+        <tr><td>Đổi nhưng hết size hoặc hết màu</td><td>Hoàn tiền sản phẩm đã trả</td><td>Cửa hàng chịu</td></tr>
+      </tbody>
+    </table>
+
+    <h2>4. Cách thực hiện</h2>
+    <ol>
+      <li>Liên hệ <a href="mailto:<%= shop.legal.email %>"><%= shop.legal.email %></a> hoặc gọi <%= shop.legal.phone %> trong thời hạn đổi trả, kèm mã đơn hàng và ảnh sản phẩm (nếu sản phẩm bị lỗi).</li>
+      <li>Gửi sản phẩm về địa chỉ <%= shop.legal.address %> theo hướng dẫn của cửa hàng.</li>
+      <li>Cửa hàng kiểm tra sản phẩm và thông báo kết quả cho bạn.</li>
+      <li>Đơn được chuyển sang trạng thái "Trả hàng/Hoàn tiền" trong hệ thống. Sản phẩm đạt điều kiện được cộng lại vào tồn kho.</li>
+    </ol>
+
+    <h2>5. Hoàn tiền</h2>
+    <ul>
+      <li>Đơn thanh toán khi nhận hàng: hoàn tiền qua chuyển khoản ngân hàng theo thông tin bạn cung cấp.</li>
+      <li>Đơn thanh toán online: cửa hàng hoàn tiền về nguồn đã thanh toán hoặc chuyển khoản, sau đó ghi nhận "Đã hoàn tiền" trong đơn hàng.</li>
+      <li>Thời gian hoàn tiền tính từ khi cửa hàng nhận và kiểm tra xong sản phẩm trả.</li>
+      <li>Mã giảm giá đã dùng cho đơn trả hàng không được hoàn lượt sử dụng. Lượt sử dụng chỉ được hoàn khi đơn bị hủy.</li>
+    </ul>
+
+    <h2>6. Hủy đơn trước khi giao</h2>
+    <p>Bạn tự hủy đơn khi đơn còn "Chờ xác nhận". Sau khi đã xác nhận, vui lòng liên hệ cửa hàng. Xem thêm <a href="/legal/terms">Điều khoản sử dụng</a>.</p>
+  </div>
+</div>
+<%- include('../partials/foot') %>

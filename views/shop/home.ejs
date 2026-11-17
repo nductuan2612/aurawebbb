@@ -1,0 +1,77 @@
+<%- include('../partials/head') %>
+<% var lead = featured[0] || newest[0] || null; %>
+<section class="hero wrap">
+  <div class="hero-copy">
+    <h1>Chọn đúng size, đúng màu, biết ngay còn hàng.</h1>
+    <p class="lede">Mỗi sản phẩm hiển thị số lượng còn lại theo từng size và màu. Đặt hàng, theo dõi đơn và đổi trả trong <%= shop.policies.returnDays %> ngày.</p>
+    <p class="hero-links">
+      <a class="btn" href="/products">Xem hàng mới</a>
+      <a class="btn btn-outline" href="/products?sale=1">Đang giảm giá</a>
+    </p>
+  </div>
+  <% if (lead) { %>
+    <figure class="hero-figure">
+      <a href="/products/<%= lead.slug %>"><img src="<%= lead.image || '/images/placeholder.svg' %>" alt="<%= lead.name %>" width="600" height="800"></a>
+      <figcaption><a href="/products/<%= lead.slug %>"><%= lead.name %></a><span><%= vnd(lead.minPrice) %></span></figcaption>
+    </figure>
+  <% } %>
+</section>
+
+<% if (!newest.length) { %>
+  <section class="wrap section">
+    <div class="empty">
+      <h2>Cửa hàng chưa có sản phẩm</h2>
+      <p>Hãy chạy file sql/02_seed.sql trong SSMS để nạp dữ liệu mẫu, hoặc thêm sản phẩm trong trang quản trị.</p>
+    </div>
+  </section>
+<% } else { %>
+  <section class="wrap section">
+    <div class="block-head"><h2>Hàng mới về</h2><a href="/products">Xem tất cả sản phẩm</a></div>
+    <ul class="grid">
+      <% newest.forEach(function (p) { %><li><%- include('../partials/product-card', { p: p }) %></li><% }) %>
+    </ul>
+  </section>
+
+  <% if (bestsellers.length) { %>
+    <section class="wrap section">
+      <div class="block-head"><h2>Bán chạy</h2><a href="/products?sort=bestseller">Xem thêm</a></div>
+      <ul class="grid">
+        <% bestsellers.forEach(function (p) { %><li><%- include('../partials/product-card', { p: p }) %></li><% }) %>
+      </ul>
+    </section>
+  <% } %>
+<% } %>
+
+<% if (navCategories.length) { %>
+  <section class="wrap section">
+    <div class="block-head"><h2>Mua theo danh mục</h2></div>
+    <div class="shop-by">
+      <% navCategories.forEach(function (root) { %>
+        <div>
+          <h3><a href="/category/<%= root.slug %>"><%= root.name %></a></h3>
+          <ul>
+            <% root.children.forEach(function (c) { %><li><a href="/category/<%= c.slug %>"><%= c.name %></a></li><% }) %>
+          </ul>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+<% } %>
+
+<section class="wrap">
+  <div class="policy-strip">
+    <div>
+      <h3>Giao hàng</h3>
+      <p>Phí giao <%= vnd(shop.shipping.fee) %>. Miễn phí cho đơn từ <%= vnd(shop.shipping.freeFrom) %> sau giảm giá.</p>
+    </div>
+    <div>
+      <h3>Đổi trả</h3>
+      <p>Đổi size hoặc màu trong <%= shop.policies.returnDays %> ngày kể từ khi nhận hàng, sản phẩm còn nguyên tem mác.</p>
+    </div>
+    <div>
+      <h3>Thanh toán</h3>
+      <p>Thanh toán khi nhận hàng hoặc thanh toán online qua cổng thanh toán.</p>
+    </div>
+  </div>
+</section>
+<%- include('../partials/foot') %>

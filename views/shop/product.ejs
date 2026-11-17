@@ -1,0 +1,189 @@
+<%- include('../partials/head') %>
+<%
+  var imgs = product.images.length ? product.images : [{ url: '/images/placeholder.svg', alt: product.name }];
+  var prices = product.variants.map(function (v) { return v.price; });
+  var minP = prices.length ? Math.min.apply(null, prices) : 0;
+  var maxP = prices.length ? Math.max.apply(null, prices) : 0;
+  var firstColor = colors[0] ? colors[0].name : '';
+  var inStock = product.variants.filter(function (v) { return v.stock > 0; });
+%>
+<div class="wrap">
+  <nav class="crumbs" aria-label="Đường dẫn">
+    <ol>
+      <li><a href="/">Trang chủ</a></li>
+      <% if (product.parentName) { %><li><a href="/category/<%= product.parentSlug %>"><%= product.parentName %></a></li><% } %>
+      <li><a href="/category/<%= product.categorySlug %>"><%= product.categoryName %></a></li>
+      <li aria-current="page"><%= product.name %></li>
+    </ol>
+  </nav>
+
+  <div class="pdp">
+    <div class="gallery">
+      <div class="gallery-main"><img id="gallery-main" src="<%= imgs[0].url %>" alt="<%= imgs[0].alt || product.name %>" width="600" height="800"></div>
+      <% if (imgs.length > 1) { %>
+        <ul class="thumbs">
+          <% imgs.forEach(function (im, i) { %>
+            <li><button class="thumb<%= i === 0 ? ' is-active' : '' %>" type="button" data-thumb data-src="<%= im.url %>" data-alt="<%= im.alt || product.name %>" aria-label="Xem ảnh <%= i + 1 %>"><img src="<%= im.url %>" alt="" width="84" height="112" loading="lazy" data-optional></button></li>
+          <% }) %>
+        </ul>
+      <% } %>
+    </div>
+
+    <div class="pdp-info">
+      <h1><%= product.name %></h1>
+      <p class="muted small">Mã sản phẩm <%= product.code %><% if (product.material) { %>. Chất liệu: <%= product.material %><% } %></p>
+
+      <p class="price-line">
+        <span class="price" id="pdp-price"><%= minP === maxP ? '' : 'Từ ' %><%= vnd(minP) %></span>
+        <s class="compare" id="pdp-compare" hidden></s>
+        <span class="tag-inline" id="pdp-off" hidden></span>
+      </p>
+
+      <% if (!product.variants.length) { %>
+        <div class="notice warn">Sản phẩm này chưa có biến thể để bán.</div>
+      <% } else { %>
+        <form id="buy-form" action="/cart/add" method="post" data-low="<%= shop.lowStockThreshold %>" data-maxqty="<%= shop.limits.maxQtyPerLine %>">
+          <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+
+          <fieldset class="pick">
+            <legend>Màu sắc: <span id="color-name"><%= firstColor %></span></legend>
+            <div class="swatches">
+              <% colors.forEach(function (c, i) { %>
+                <label class="swatch">
+                  <input type="radio" name="color" value="<%= c.name %>"<%= i === 0 ? ' checked' : '' %>>
+                  <svg viewBox="0 0 32 32" width="32" height="32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="<%= c.hex %>" stroke="#bdbab3"/></svg>
+                  <span class="sr-only"><%= c.name %></span>
+                </label>
+              <% }) %>
+            </div>
+          </fieldset>
+
+          <fieldset class="pick">
+            <legend>Kích cỡ</legend>
+            <div class="size-rail">
+              <% sizes.forEach(function (s) {
+                   // Hiện sẵn tồn kho theo màu đầu tiên; JS cập nhật lại khi khách đổi màu.
+                   var sv = product.variants.filter(function (x) { return x.color === firstColor && x.size === s; })[0];
+                   var out = !sv || sv.stock <= 0; %>
+                <label class="size-cell<%= out ? ' is-out' : '' %>">
+                  <input type="radio" name="size" value="<%= s %>"<%= out ? ' disabled' : '' %>>
+                  <span class="size-body"><strong><%= s %></strong><small><%= !sv ? 'Không có' : (sv.stock > 0 ? 'Còn ' + sv.stock : 'Hết hàng') %></small></span>
+                </label>
+              <% }) %>
+            </div>
+          </fieldset>
+
+          <noscript>
+            <div class="field">
+              <label for="variant-fallback">Chọn phiên bản (size, màu)</label>
+              <select id="variant-fallback" name="variantId">
+                <% inStock.forEach(function (v) { %><option value="<%= v.id %>"><%= v.color %>, size <%= v.size %> (còn <%= v.stock %>)</option><% }) %>
+              </select>
+            </div>
+          </noscript>
+
+          <p class="stock-line" id="pdp-stock" role="status">Chọn kích cỡ để xem số lượng còn lại.</p>
+          <p class="muted small">SKU: <span id="pdp-sku">-</span></p>
+
+          <div class="buy-row">
+            <div class="qty" data-qty>
+              <button type="button" data-step="-1" aria-label="Giảm số lượng">-</button>
+              <input type="number" name="quantity" value="1" min="1" max="<%= shop.limits.maxQtyPerLine %>" inputmode="numeric" aria-label="Số lượng">
+              <button type="button" data-step="1" aria-label="Tăng số lượng">+</button>
+            </div>
+            <button class="btn" id="add-to-cart" type="submit">Thêm vào giỏ hàng</button>
+          </div>
+          <p class="muted small" id="pick-hint" role="status"></p>
+        </form>
+        <script type="application/json" id="variant-data"><%- safeJson(product.variants) %></script>
+      <% } %>
+
+      <% if (product.description) { %>
+        <details class="accordion" open>
+          <summary>Mô tả sản phẩm</summary>
+          <p class="pre"><%= product.description %></p>
+        </details>
+      <% } %>
+      <details class="accordion">
+        <summary>Giao hàng và đổi trả</summary>
+        <p>Phí giao <%= vnd(shop.shipping.fee) %>, miễn phí từ <%= vnd(shop.shipping.freeFrom) %>. Đổi size hoặc màu trong <%= shop.policies.returnDays %> ngày kể từ khi nhận hàng. <a href="/legal/returns">Xem chính sách đổi trả</a>.</p>
+      </details>
+    </div>
+  </div>
+
+  <section class="reviews" id="reviews" aria-labelledby="reviews-title">
+    <div class="rating-box">
+      <h2 id="reviews-title">Đánh giá</h2>
+      <% if (summary.total) { %>
+        <p class="avg"><%= summary.average %><span class="muted small"> / 5</span></p>
+        <p class="stars" aria-hidden="true"><%= '★'.repeat(Math.round(summary.average)) + '☆'.repeat(5 - Math.round(summary.average)) %></p>
+        <p class="muted small"><%= summary.total %> đánh giá</p>
+        <ul class="dist">
+          <% [5, 4, 3, 2, 1].forEach(function (n) { %>
+            <li><span><%= n %> sao</span><progress max="<%= summary.total %>" value="<%= summary.distribution[n] %>"></progress><span><%= summary.distribution[n] %></span></li>
+          <% }) %>
+        </ul>
+      <% } else { %>
+        <p class="muted">Chưa có đánh giá nào.</p>
+      <% } %>
+    </div>
+
+    <div>
+      <% if (reviewed) { %><div class="notice ok" role="status">Cảm ơn bạn đã đánh giá sản phẩm.</div><% } %>
+
+      <% if (eligible.length) { %>
+        <form class="review-form" action="/reviews" method="post">
+          <h3>Viết đánh giá của bạn</h3>
+          <input type="hidden" name="csrfToken" value="<%= csrfToken %>">
+          <input type="hidden" name="productId" value="<%= product.id %>">
+          <input type="hidden" name="backSlug" value="<%= product.slug %>">
+          <div class="field">
+            <label for="rv-item">Sản phẩm bạn đã nhận</label>
+            <select id="rv-item" name="orderItemId" required>
+              <% eligible.forEach(function (e) { %><option value="<%= e.orderItemId %>"><%= e.color %>, size <%= e.size %> (đơn <%= e.orderCode %>, giao <%= fmtDate(e.deliveredAt) %>)</option><% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label for="rv-rating">Số sao</label>
+            <select id="rv-rating" name="rating" required>
+              <% [5, 4, 3, 2, 1].forEach(function (n) { %><option value="<%= n %>"><%= n %> sao</option><% }) %>
+            </select>
+          </div>
+          <div class="field">
+            <label for="rv-title">Tiêu đề (không bắt buộc)</label>
+            <input id="rv-title" type="text" name="title" maxlength="100">
+          </div>
+          <div class="field">
+            <label for="rv-comment">Nhận xét</label>
+            <textarea id="rv-comment" name="comment" maxlength="1000" required></textarea>
+          </div>
+          <button class="btn" type="submit">Gửi đánh giá</button>
+        </form>
+      <% } else if (!user) { %>
+        <p class="muted small"><a href="/login?next=<%= encodeURIComponent('/products/' + product.slug) %>">Đăng nhập</a> để đánh giá. Chỉ khách đã nhận hàng (đơn ở trạng thái "Đã giao") mới đánh giá được.</p>
+      <% } else { %>
+        <p class="muted small">Chỉ khách đã nhận hàng (đơn ở trạng thái "Đã giao") mới đánh giá được sản phẩm này.</p>
+      <% } %>
+
+      <% reviews.items.forEach(function (r) { %>
+        <article class="review">
+          <p class="stars" aria-label="<%= r.rating %> trên 5 sao"><%= '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating) %></p>
+          <% if (r.title) { %><h3><%= r.title %></h3><% } %>
+          <p class="pre"><%= r.comment %></p>
+          <p class="meta"><%= maskName(r.fullName) %>, <%= r.color %> / <%= r.size %>, <%= fmtDate(r.createdAt) %></p>
+        </article>
+      <% }) %>
+      <%- include('../partials/pagination', { pagination: reviews.pagination, basePath: '/products/' + product.slug, qs: '', param: 'rpage', anchor: '#reviews' }) %>
+    </div>
+  </section>
+
+  <% if (related.length) { %>
+    <section class="section">
+      <div class="block-head"><h2>Có thể bạn thích</h2></div>
+      <ul class="grid">
+        <% related.forEach(function (p) { %><li><%- include('../partials/product-card', { p: p }) %></li><% }) %>
+      </ul>
+    </section>
+  <% } %>
+</div>
+<%- include('../partials/foot') %>

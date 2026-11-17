@@ -1,0 +1,103 @@
+/* Giao diện khu vực quản trị. Dùng chung biến màu và chữ với base.css, không có style nội tuyến. */
+body.admin { display: block; background: var(--bone); }
+.admin-shell { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+.admin-side { background: #fff; border-right: 1px solid var(--hair); padding: 22px 14px; position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 22px; overflow-y: auto; }
+.admin-brand { font-size: 1.2rem; font-weight: 300; letter-spacing: 0.26em; text-decoration: none; padding: 0 8px; }
+.admin-brand span { display: block; font-size: 0.75rem; letter-spacing: 0.01em; color: var(--graphite); font-weight: 400; margin-top: 2px; }
+.admin-side ul { list-style: none; display: grid; gap: 2px; }
+.admin-side nav a { display: block; padding: 0.55rem 0.7rem; text-decoration: none; border-left: 2px solid transparent; }
+.admin-side nav a:hover { background: var(--bone); }
+.admin-side nav a[aria-current="page"] { border-left-color: var(--ink); background: var(--bone); font-weight: 500; }
+.admin-user { margin-top: auto; border-top: 1px solid var(--hair); padding-top: 14px; display: grid; gap: 8px; font-size: 0.875rem; }
+.admin-user p { margin: 0; overflow-wrap: anywhere; }
+.admin-main { padding: 28px clamp(16px, 3vw, 40px) 64px; min-width: 0; }
+.admin-main h1 { font-size: 1.7rem; font-weight: 300; margin-bottom: 0.6rem; }
+.admin-main h2 { font-size: 1.1rem; font-weight: 500; }
+@media (max-width: 860px) {
+  .admin-shell { grid-template-columns: 1fr; }
+  .admin-side { position: static; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 12px; border-right: 0; border-bottom: 1px solid var(--hair); }
+  .admin-side ul { grid-auto-flow: column; overflow-x: auto; }
+  .admin-user { margin-top: 0; border-top: 0; padding-top: 0; grid-auto-flow: column; align-items: center; }
+}
+
+/* ---------- Khối nội dung ---------- */
+.panel { background: #fff; border: 1px solid var(--hair); padding: 18px 20px; margin-bottom: 18px; }
+.panel > :last-child { margin-bottom: 0; }
+.panel.warn-panel { border-left: 3px solid var(--warn); }
+.empty { padding: 36px 0; color: var(--graphite); }
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.admin-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 1000px) { .two-col, .admin-grid { grid-template-columns: 1fr; } }
+.sum { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; margin: 1rem 0 0; }
+.sum dt { color: var(--graphite); }
+.sum dd { margin: 0; text-align: right; }
+.sum .total { font-weight: 600; color: var(--ink); border-top: 1px solid var(--hair); padding-top: 8px; }
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-block: 18px 26px; }
+.kpi { background: #fff; border: 1px solid var(--hair); padding: 16px 18px; }
+.kpi p { margin: 0; }
+.kpi-label { color: var(--graphite); font-size: 0.85rem; }
+.kpi-value { font-size: 1.9rem; font-weight: 300; letter-spacing: -0.02em; }
+
+/* ---------- Bảng ---------- */
+.table-wrap { overflow-x: auto; background: #fff; border: 1px solid var(--hair); margin-bottom: 8px; }
+table.data { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+table.data th { text-align: left; font-weight: 500; color: var(--graphite); padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--hair); white-space: nowrap; }
+table.data td { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--hair); vertical-align: middle; }
+table.data tr:last-child td { border-bottom: 0; }
+table.data .num { text-align: right; white-space: nowrap; }
+table.data .actions { white-space: nowrap; text-align: right; }
+table.data .actions form { display: inline; }
+.thumb-sm { width: 40px; aspect-ratio: 3 / 4; object-fit: cover; background: var(--bone); display: block; }
+.cell-product { display: flex; gap: 12px; align-items: center; }
+
+/* ---------- Bộ lọc và thanh công cụ ---------- */
+.toolbar { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 14px; }
+.toolbar .field { margin: 0; }
+.toolbar input, .toolbar select { min-height: 40px; }
+.toolbar .grow { flex: 1 1 240px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 14px; }
+.tabs a { padding: 0.4rem 0.8rem; border: 1px solid var(--hair); background: #fff; text-decoration: none; font-size: 0.875rem; }
+.tabs a:hover { border-color: var(--ink); }
+.tabs a[aria-current="page"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ---------- Nhãn trạng thái ---------- */
+.badge.is-on, .state-active { background: #e5f4ec; border-color: #b4dcc6; color: var(--ok); }
+.badge.is-off, .state-paused { background: var(--bone); color: var(--graphite); }
+.state-upcoming { background: #e8f0fb; border-color: #bcd0ee; color: var(--info); }
+.state-expired, .state-used_up { background: #fbeae8; border-color: #efbdb7; color: var(--sale); }
+.indent { display: inline-block; width: 1.4rem; }
+.tag-low { color: var(--warn); font-weight: 500; }
+.tag-out { color: var(--sale); font-weight: 500; }
+
+/* ---------- Biểu mẫu quản trị ---------- */
+.form-panel { max-width: 760px; }
+.check-cell { display: flex; align-items: center; gap: 0.5rem; min-height: 40px; }
+.check-cell input { width: 18px; height: 18px; accent-color: var(--ink); }
+.check-cell label { margin: 0; font-size: 0.875rem; color: var(--ink); }
+.action-box { border: 1px solid var(--hair); padding: 14px 16px; margin-bottom: 12px; background: var(--bone); }
+.action-box h3 { margin-bottom: 0.6rem; font-size: 1rem; }
+.action-box .field { margin-bottom: 0.7rem; }
+
+.variant-form { display: grid; grid-template-columns: 1.3fr 0.6fr 1fr 64px 1fr 1fr 0.8fr auto auto; gap: 8px; align-items: end; background: #fff; border: 1px solid var(--hair); padding: 12px; margin-bottom: 8px; }
+.variant-form label { font-size: 0.75rem; color: var(--graphite); display: block; margin-bottom: 2px; }
+.variant-form input, .variant-form select { min-height: 40px; padding: 0.4rem 0.6rem; }
+.variant-form input[type="color"] { padding: 2px; }
+.variant-form input[type="checkbox"] { min-height: 0; padding: 0; }
+.panel .variant-form { border: 0; padding: 0; margin: 0; }
+@media (max-width: 1180px) { .variant-form { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .variant-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---------- Lịch sử đơn ---------- */
+.timeline { list-style: none; border-left: 1px solid var(--hair); margin-left: 6px; }
+.timeline li { position: relative; padding: 0 0 16px 20px; }
+.timeline li::before { content: ""; position: absolute; left: -5px; top: 0.5em; width: 9px; height: 9px; background: var(--ink); border-radius: 50%; }
+.timeline li:last-child { padding-bottom: 0; }
+.timeline p { margin: 0.1rem 0; }
+
+/* ---------- Biểu đồ doanh thu (SVG) ---------- */
+.chart { width: 100%; height: auto; background: #fff; border: 1px solid var(--hair); display: block; margin-bottom: 18px; }
+.chart .bar { fill: var(--ink); }
+.chart .bar:hover { fill: var(--sale); }
+.chart .axis { stroke: var(--hair); stroke-width: 1; }
+.chart .tick { font-size: 11px; fill: var(--graphite); font-family: var(--font); }

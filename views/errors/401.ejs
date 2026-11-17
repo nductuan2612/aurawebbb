@@ -1,0 +1,8 @@
+<%- include('../partials/head', { title: 'Cần đăng nhập' }) %>
+<div class="wrap error-page">
+  <p class="code">401</p>
+  <h1>Cần đăng nhập</h1>
+  <p class="muted"><%= locals.message || 'Bạn cần đăng nhập để thực hiện thao tác này.' %></p>
+  <p class="row"><a class="btn" href="/login">Đăng nhập</a><a class="btn btn-outline" href="/register">Đăng ký</a></p>
+</div>
+<%- include('../partials/foot') %>

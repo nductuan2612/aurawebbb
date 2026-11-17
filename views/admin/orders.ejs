@@ -1,0 +1,60 @@
+<%- include('../partials/admin-head') %>
+<%
+  var totalAll = 0;
+  S.ORDER.forEach(function (c) { totalAll += counts[c] || 0; });
+%>
+<h1>Đơn hàng</h1>
+
+<nav class="tabs" aria-label="Lọc theo trạng thái">
+  <a href="/admin/orders"<% if (!filters.status && !filters.refund) { %> aria-current="page"<% } %>>Tất cả (<%= totalAll %>)</a>
+  <% S.ORDER.forEach(function (c) { %>
+    <a href="/admin/orders?status=<%= c %>"<% if (filters.status === c) { %> aria-current="page"<% } %>><%= S.label(c) %> (<%= counts[c] || 0 %>)</a>
+  <% }) %>
+  <a href="/admin/orders?refund=1"<% if (filters.refund) { %> aria-current="page"<% } %>>Cần hoàn tiền (<%= refundCount %>)</a>
+</nav>
+
+<form class="toolbar" method="get" action="/admin/orders">
+  <% if (filters.status) { %><input type="hidden" name="status" value="<%= filters.status %>"><% } %>
+  <% if (filters.refund) { %><input type="hidden" name="refund" value="1"><% } %>
+  <div class="field grow">
+    <label for="f-q">Tìm kiếm</label>
+    <input id="f-q" type="search" name="q" value="<%= filters.q %>" placeholder="Mã đơn, email, số điện thoại, tên người nhận" maxlength="100">
+  </div>
+  <div class="field"><label for="f-from">Từ ngày</label><input id="f-from" type="date" name="from" value="<%= filters.from %>"></div>
+  <div class="field"><label for="f-to">Đến ngày</label><input id="f-to" type="date" name="to" value="<%= filters.to %>"></div>
+  <button class="btn btn-sm" type="submit">Lọc</button>
+  <a class="btn btn-outline btn-sm" href="/admin/orders">Xóa bộ lọc</a>
+</form>
+
+<% if (!items.length) { %>
+  <p class="empty">Không có đơn hàng nào phù hợp.</p>
+<% } else { %>
+  <div class="table-wrap">
+    <table class="data">
+      <thead>
+        <tr>
+          <th scope="col">Mã đơn</th><th scope="col">Đặt lúc</th><th scope="col">Khách hàng</th>
+          <th scope="col" class="num">SL</th><th scope="col" class="num">Tổng</th><th scope="col">Thanh toán</th><th scope="col">Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function (o) { %>
+          <tr>
+            <td><a href="/admin/orders/<%= o.code %>"><strong><%= o.code %></strong></a></td>
+            <td><%= fmtDateTime(o.placedAt) %></td>
+            <td><%= o.customerName %><br><span class="muted small"><%= o.customerEmail %></span></td>
+            <td class="num"><%= o.itemCount %></td>
+            <td class="num"><%= vnd(o.total) %></td>
+            <td>
+              <span class="badge <%= S.paymentBadgeClass(o.paymentState) %>"><%= S.paymentLabel(o.paymentMethod, o.paymentState) %></span>
+              <% if (o.needsRefund) { %><span class="badge pay-failed">Cần hoàn tiền</span><% } %>
+            </td>
+            <td><span class="badge <%= S.badgeClass(o.status) %>"><%= S.label(o.status) %></span></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <%- include('../partials/pagination', { pagination: pagination, basePath: '/admin/orders', qs: baseQuery }) %>
+<% } %>
+<%- include('../partials/admin-foot') %>

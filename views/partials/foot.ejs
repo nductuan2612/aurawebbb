@@ -1,0 +1,49 @@
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <h2><%= shop.name %></h2>
+        <p class="muted"><%= shop.tagline %>. Mặc đẹp mỗi ngày, giao hàng toàn quốc.</p>
+      </div>
+      <div>
+        <h2>Chính sách</h2>
+        <ul>
+          <li><a href="/legal/terms">Điều khoản sử dụng</a></li>
+          <li><a href="/legal/privacy">Bảo vệ dữ liệu cá nhân</a></li>
+          <li><a href="/legal/returns">Chính sách đổi trả</a></li>
+          <li><a href="/legal/seller">Thông tin người bán</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Tài khoản</h2>
+        <ul>
+          <% if (user) { %>
+            <li><a href="/account">Hồ sơ của tôi</a></li>
+            <li><a href="/orders">Đơn hàng của tôi</a></li>
+            <li><a href="/account/addresses">Sổ địa chỉ</a></li>
+          <% } else { %>
+            <li><a href="/login">Đăng nhập</a></li>
+            <li><a href="/register">Đăng ký</a></li>
+          <% } %>
+          <li><a href="/cart">Giỏ hàng</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Liên hệ</h2>
+        <ul>
+          <li><%= shop.legal.phone %></li>
+          <li><a href="mailto:<%= shop.legal.email %>"><%= shop.legal.email %></a></li>
+          <li class="muted"><%= shop.legal.workingHours %></li>
+        </ul>
+      </div>
+    </div>
+    <p class="footer-note">
+      <%= shop.legal.companyName %>, <%= shop.legal.address %>.
+      <% if (shop.legal.isSample) { %>Thông tin trên website này là nội dung mẫu cho đồ án học phần Thương mại điện tử.<% } %>
+    </p>
+  </div>
+</footer>
+<script src="/js/app.js" defer></script>
+</body>
+</html>
